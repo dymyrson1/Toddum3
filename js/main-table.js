@@ -1,7 +1,7 @@
 import {
-  getKunder,
-  getProdukter,
-  updateKunde,
+  getCustomers,
+  getProducts,
+  updateCustomer,
   getISOWeekId,
   getOrdersByWeek,
   getOrderItemsByOrderIds,
@@ -29,7 +29,7 @@ export async function initMainTable() {
 }
 
 async function loadData() {
-  const [customers, products] = await Promise.all([getKunder(), getProdukter()]);
+  const [customers, products] = await Promise.all([getCustomers(), getProducts()]);
 
   state.customers = customers;
   state.products = products.filter((product) => product.active);
@@ -642,7 +642,7 @@ async function saveKundeRowOrder() {
   const updates = rows.map((row, index) => {
     const customerId = row.dataset.customerRow;
 
-    return updateKunde(customerId, {
+    return updateCustomer(customerId, {
       order: index + 1,
     });
   });

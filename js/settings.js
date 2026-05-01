@@ -1,17 +1,17 @@
 import {
-  getKunder,
-  addKunde,
-  updateKunde,
-  softDeleteKunde,
-  restoreKunde,
-  getProdukter,
-  addProdukt,
-  updateProdukt,
-  softDeleteProdukt,
-  restoreProdukt,
-  addEmballasje,
-  updateEmballasje,
-  removeEmballasje,
+  getCustomers,
+  addCustomer,
+  updateCustomer,
+  softDeleteCustomer,
+  restoreCustomer,
+  getProducts,
+  addProduct,
+  updateProduct,
+  softDeleteProduct,
+  restoreProduct,
+  addPackaging,
+  updatePackaging,
+  removePackaging,
 } from "./storage.js";
 
 const container = document.querySelector("#settingsTab");
@@ -38,8 +38,8 @@ export async function initInnstillinger() {
 }
 
 async function render() {
-  const customers = await getKunder();
-  const products = await getProdukter();
+  const customers = await getCustomers();
+  const products = await getProducts();
 
   container.innerHTML = `
     <div class="settings">
@@ -139,7 +139,7 @@ async function render() {
                 .join("")}
             </div>
           
-        <form id="addKundeForm" class="settings-add-bar customer-add-bar">
+        <form id="addCustomerForm" class="settings-add-bar customer-add-bar">
           <input name="name" placeholder="Kundenavn" required />
           <input name="contactPerson" placeholder="Kontaktperson" />
           <input name="address" placeholder="Adresse" />
@@ -282,7 +282,7 @@ async function render() {
           </div>
         </div>
       
-        <form id="addProduktForm" class="settings-add-bar">
+        <form id="addProductForm" class="settings-add-bar">
           <input id="productNavn" placeholder="Nytt produkt" required />
           <button type="submit">Legg til produkt</button>
         </form>
@@ -294,37 +294,37 @@ async function render() {
 }
 
 function bindEvents() {
-  bindLegg tilKunde();
-  bindKundeAutosave();
+  bindAddCustomer();
+  bindCustomerAutosave();
   bindKundeStatusHandlinger();
 
-  bindLegg tilProdukt();
-  bindProduktAutosave();
+  bindAddProduct();
+  bindProductAutosave();
   bindProduktStatusHandlinger();
 
-  bindLegg tilEmballasje();
-  bindEmballasjeAutosave();
-  bindFjernEmballasje();
+  bindAddPackaging();
+  bindPackagingAutosave();
+  bindRemovePackaging();
 }
 
-function bindLegg tilKunde() {
-  document.querySelector("#addKundeForm").addEventListener("submit", async (event) => {
+function bindAddCustomer() {
+  document.querySelector("#addCustomerForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const input = document.querySelector("#customerNavn");
-    await addKunde(input.value);
+    await addCustomer(input.value);
 
     render();
   });
 }
 
-function bindKundeAutosave() {
+function bindCustomerAutosave() {
   document.querySelectorAll("[data-customer-field]").forEach((input) => {
     input.addEventListener("blur", async () => {
       const [customerId, fieldNavn] = input.dataset.customerField.split(":");
 
       await runWithLagreStatus(() =>
-        updateKunde(customerId, {
+        updateCustomer(customerId, {
           [fieldNavn]: input.value.trim(),
         }),
       );
@@ -350,37 +350,37 @@ function bindKundeStatusHandlinger() {
 
       if (!confirmed) return;
 
-      await softDeleteKunde(button.dataset.disableKunde);
+      await softDeleteCustomer(button.dataset.disableCustomer);
       render();
     });
   });
 
   document.querySelectorAll("[data-restore-customer]").forEach((button) => {
     button.addEventListener("click", async () => {
-      await restoreKunde(button.dataset.restoreKunde);
+      await restoreCustomer(button.dataset.restoreCustomer);
       render();
     });
   });
 }
 
-function bindLegg tilProdukt() {
-  document.querySelector("#addProduktForm").addEventListener("submit", async (event) => {
+function bindAddProduct() {
+  document.querySelector("#addProductForm").addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const input = document.querySelector("#productNavn");
-    await addProdukt(input.value);
+    await addProduct(input.value);
 
     render();
   });
 }
 
-function bindProduktAutosave() {
+function bindProductAutosave() {
   document.querySelectorAll("[data-product-field]").forEach((input) => {
     input.addEventListener("blur", async () => {
       const [productId, fieldNavn] = input.dataset.productField.split(":");
 
       await runWithLagreStatus(() =>
-        updateProdukt(productId, {
+        updateProduct(productId, {
           [fieldNavn]: input.value.trim(),
         }),
       );
@@ -406,20 +406,20 @@ function bindProduktStatusHandlinger() {
 
       if (!confirmed) return;
 
-      await softDeleteProdukt(button.dataset.disableProdukt);
+      await softDeleteProduct(button.dataset.disableProduct);
       render();
     });
   });
 
   document.querySelectorAll("[data-restore-product]").forEach((button) => {
     button.addEventListener("click", async () => {
-      await restoreProdukt(button.dataset.restoreProdukt);
+      await restoreProduct(button.dataset.restoreProduct);
       render();
     });
   });
 }
 
-function bindLegg tilEmballasje() {
+function bindAddPackaging() {
   document.querySelectorAll("[data-add-pack]").forEach((form) => {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -428,14 +428,14 @@ function bindLegg tilEmballasje() {
       const packagingNavn = form.elements.packagingNavn.value;
       const weightGrams = form.elements.weightGrams.value;
 
-      await addEmballasje(productId, packagingNavn, weightGrams);
+      await addPackaging(productId, packagingNavn, weightGrams);
 
       render();
     });
   });
 }
 
-function bindEmballasjeAutosave() {
+function bindPackagingAutosave() {
   document.querySelectorAll("[data-packaging-field]").forEach((input) => {
     input.addEventListener("blur", async () => {
       const [productId, packagingId] = input.dataset.packagingField.split(":");
@@ -448,7 +448,7 @@ function bindEmballasjeAutosave() {
         `[data-packaging-field="${productId}:${packagingId}:weightGrams"]`,
       );
 
-      await updateEmballasje(
+      await updatePackaging(
         productId,
         packagingId,
         nameInput.value.trim(),
@@ -467,16 +467,16 @@ function bindEmballasjeAutosave() {
   });
 }
 
-function bindFjernEmballasje() {
+function bindRemovePackaging() {
   document.querySelectorAll("[data-remove-packaging]").forEach((button) => {
     button.addEventListener("click", async () => {
       const confirmed = confirm("Fjern this packaging?");
 
       if (!confirmed) return;
 
-      const [productId, packagingId] = button.dataset.removeEmballasje.split(":");
+      const [productId, packagingId] = button.dataset.removePackaging.split(":");
 
-      await removeEmballasje(productId, packagingId);
+      await removePackaging(productId, packagingId);
 
       render();
     });

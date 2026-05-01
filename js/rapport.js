@@ -1,5 +1,5 @@
 import {
-  getProdukter,
+  getProducts,
   getISOWeekId,
   getOrdersByWeek,
   getOrderItemsByOrderIds,
@@ -21,7 +21,7 @@ export async function initRapport() {
 }
 
 async function loadData() {
-  state.products = await getProdukter();
+  state.products = await getProducts();
   state.orders = await getOrdersByWeek(state.weekId);
 
   const orderIds = state.orders.map((order) => order.id);
