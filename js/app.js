@@ -68,7 +68,8 @@ tabButtons.forEach((button) => {
 
 listenToAuthState((user) => {
   if (user) {
-    showAppView();\n    initTheme();
+    showAppView();
+    initTheme();
     switchTab("main");
 
     initInnstillinger();
