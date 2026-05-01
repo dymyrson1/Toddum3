@@ -134,3 +134,54 @@ button {
   padding: 6px 10px;
   border-radius: 8px;
 }
+
+/* Header layout fix */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header h1 {
+  margin-right: auto;
+}
+
+.theme-toggle-btn {
+  margin-left: auto;
+}
+
+#logoutBtn {
+  margin-left: 0;
+}
+
+/* Dark theme bug fixes */
+:root[data-theme="dark"] .filled-cell {
+  background: rgba(59, 130, 246, 0.16);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .filled-cell:hover {
+  background: rgba(59, 130, 246, 0.24);
+}
+
+:root[data-theme="dark"] .cell-line {
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .empty-cell,
+:root[data-theme="dark"] .draft-cell,
+:root[data-theme="dark"] .empty-main-table {
+  color: var(--muted);
+}
+
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .order-modal-backdrop {
+  background: rgba(0, 0, 0, 0.65);
+}
