@@ -529,3 +529,21 @@
 .draft-row .customer-autocomplete input {
   width: 100%;
 }
+
+/* Autocomplete clickability fix */
+.customer-suggestions {
+  pointer-events: auto;
+  z-index: 99999;
+}
+
+.customer-suggestion {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.order-grid,
+.order-grid-body,
+.order-grid-row,
+.order-grid-cell {
+  overflow: visible;
+}
