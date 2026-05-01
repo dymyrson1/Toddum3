@@ -1,0 +1,227 @@
+/* Main table layout */
+
+.main-table-view {
+  display: grid;
+  gap: 18px;
+}
+
+.main-table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main-table-toolbar h2 {
+  margin: 0;
+}
+
+.main-table-toolbar p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+
+/* Order grid */
+
+.order-grid {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.order-grid-row {
+  display: grid;
+  grid-template-columns: 240px repeat(var(--product-count), minmax(140px, 1fr));
+  min-width: max-content;
+}
+
+.order-grid-body {
+  display: grid;
+}
+
+.order-grid-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #eadfce;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-grid-cell {
+  min-height: 54px;
+  padding: 10px 12px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-grid-cell:last-child {
+  border-right: none;
+}
+
+
+/* Header and customer column */
+
+.customer-cell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #fffaf3;
+}
+
+.order-grid-header .customer-cell {
+  z-index: 4;
+  background: #eadfce;
+}
+
+.product-header-cell {
+  font-weight: 700;
+}
+
+
+/* Rows and cells */
+
+.customer-row {
+  background: var(--card);
+}
+
+.customer-row:hover,
+.draft-row {
+  background: #fffaf3;
+}
+
+.customer-row.dragging {
+  opacity: 0.45;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.order-cell {
+  width: 100%;
+  min-height: 54px;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  border-radius: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.order-cell:hover {
+  background: #f7f1e8;
+}
+
+.cell-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.empty-cell,
+.draft-cell,
+.empty-main-table {
+  color: var(--muted);
+}
+
+.empty-main-table {
+  padding: 24px;
+}
+
+
+/* Draft row */
+
+.draft-row select {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: white;
+}
+
+
+/* Order modal */
+
+.order-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.order-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.order-modal-card {
+  position: relative;
+  z-index: 101;
+  width: min(520px, calc(100vw - 32px));
+  margin: 10vh auto;
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  overflow: hidden;
+}
+
+.order-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-modal-header h3 {
+  margin: 0;
+}
+
+.order-modal-header button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.order-modal-form {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.order-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-modal-row small {
+  display: block;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.order-modal-row input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.order-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}

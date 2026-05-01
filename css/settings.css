@@ -1,0 +1,95 @@
+.settings {
+  display: grid;
+  gap: 32px;
+}
+
+.settings-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.settings-form,
+.packaging-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.settings-form input,
+.packaging-form input,
+.settings-row input,
+.product-header input,
+.packaging-item input {
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.settings-list,
+.products-list,
+.packaging-list {
+  display: grid;
+  gap: 10px;
+}
+
+.settings-row,
+.product-header,
+.packaging-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-row {
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.product-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fffaf3;
+}
+
+.product-header {
+  justify-content: space-between;
+}
+
+.product-name-input {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.packaging-item {
+  padding: 8px;
+  border-radius: 10px;
+  background: #f7f1e8;
+}
+
+.packaging-item input[type="number"] {
+  width: 120px;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.danger-btn {
+  background: var(--danger);
+}
+
+.danger-btn:hover {
+  background: #8f1d14;
+}
+
+.inactive {
+  opacity: 0.45;
+}
