@@ -247,7 +247,7 @@ function render() {
             )
             .join("")}
 
-          <div class="order-grid-cell actions-cell">Handlinger</div>
+          <div class="order-grid-cell actions-cell"></div>
         </div>
 
         <div class="order-grid-body">
