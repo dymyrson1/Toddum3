@@ -1,4 +1,6 @@
-/* Main table layout */
+/* =========================
+   Main table layout
+   ========================= */
 
 .main-table-view {
   display: grid;
@@ -9,6 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .main-table-toolbar h2 {
@@ -21,10 +24,13 @@
 }
 
 
-/* Order grid */
+/* =========================
+   Order grid
+   ========================= */
 
 .order-grid {
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: visible;
   border: 1px solid var(--border);
   border-radius: 18px;
   background: var(--card);
@@ -62,8 +68,19 @@
   border-right: none;
 }
 
+.order-grid-body {
+  overflow: visible;
+}
 
-/* Header and customer column */
+.customer-autocomplete {
+  position: relative;
+  z-index: 50;
+}
+
+
+/* =========================
+   Sticky customer column
+   ========================= */
 
 .customer-cell {
   position: sticky;
@@ -82,7 +99,9 @@
 }
 
 
-/* Rows and cells */
+/* =========================
+   Rows
+   ========================= */
 
 .customer-row {
   background: var(--card);
@@ -101,7 +120,13 @@
   cursor: grab;
   color: var(--muted);
   font-size: 18px;
+  line-height: 1;
 }
+
+
+/* =========================
+   Order cells
+   ========================= */
 
 .order-cell {
   width: 100%;
@@ -114,6 +139,7 @@
   align-items: flex-start;
   flex-direction: column;
   cursor: pointer;
+  text-align: left;
 }
 
 .order-cell:hover {
@@ -139,18 +165,68 @@
 }
 
 
-/* Draft row */
+/* =========================
+   Draft row autocomplete
+   ========================= */
 
-.draft-row select {
+.customer-autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.customer-autocomplete input {
   width: 100%;
   padding: 9px 11px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: white;
+  background: #ffffff;
+  color: var(--text);
+}
+
+.customer-autocomplete input:focus {
+  outline: 2px solid rgba(138, 90, 43, 0.25);
+  border-color: var(--accent);
+}
+
+.customer-suggestions {
+ position: fixed;
+  z-index: 9999;
+  display: grid;
+  gap: 2px;
+  max-height: 220px;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--text);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+}
+
+.customer-suggestion {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: none;
+  background: #ffffff;
+  color: var(--text);
+  text-align: left;
+}
+
+.customer-suggestion:hover {
+  background: #f7f1e8;
+  color: var(--text);
+}
+
+.customer-suggestion-empty {
+  padding: 9px 10px;
+  color: var(--muted);
 }
 
 
-/* Order modal */
+/* =========================
+   Order modal
+   ========================= */
 
 .order-modal {
   position: fixed;
@@ -179,6 +255,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 18px 20px;
   border-bottom: 1px solid var(--border);
 }
@@ -217,6 +294,13 @@
   padding: 10px 12px;
   border: 1px solid var(--border);
   border-radius: 10px;
+  background: #ffffff;
+  color: var(--text);
+}
+
+.order-modal-row input:focus {
+  outline: 2px solid rgba(138, 90, 43, 0.25);
+  border-color: var(--accent);
 }
 
 .order-modal-actions {
@@ -224,4 +308,28 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 8px;
+}
+
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 720px) {
+  .main-table-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .order-grid-row {
+    grid-template-columns: 200px repeat(var(--product-count), minmax(120px, 1fr));
+  }
+
+  .order-modal-card {
+    margin-top: 6vh;
+  }
+
+  .order-modal-row {
+    grid-template-columns: 1fr;
+  }
 }

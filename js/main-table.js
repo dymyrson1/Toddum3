@@ -49,11 +49,7 @@ function getVisibleOrders() {
       customer: getCustomerById(order.customerId),
     }))
     .filter((order) => order.customer)
-    .sort((a, b) => {
-      const orderA = a.customer.order ?? 0;
-      const orderB = b.customer.order ?? 0;
-      return orderA - orderB;
-    });
+    .sort((a, b) => (a.customer.order ?? 0) - (b.customer.order ?? 0));
 }
 
 function getAvailableCustomers() {
@@ -112,23 +108,18 @@ function renderCell(orderId, productId) {
     .join("");
 }
 
-function renderCustomerSuggestions() {
-  return getAvailableCustomers()
-    .map(
-      (customer) => `
-        <option value="${customer.name}"></option>
-      `
-    )
-    .join("");
-}
-
 function renderDraftRow(draftRow) {
   return `
     <div class="order-grid-row draft-row" data-draft-row="${draftRow.id}">
       <div class="order-grid-cell customer-cell">
-        <select data-draft-customer="${draftRow.id}">
-          ${renderCustomerOptions()}
-        </select>
+        <div class="customer-autocomplete">
+          <input
+            type="text"
+            placeholder="Start typing customer..."
+            autocomplete="off"
+            data-draft-customer-input="${draftRow.id}"
+          />
+        </div>
       </div>
 
       ${state.products
@@ -220,6 +211,7 @@ function render() {
         </div>
       </div>
 
+      <div id="customerSuggestionPortal" class="customer-suggestions hidden"></div>
       <div id="orderModal" class="order-modal hidden"></div>
     </section>
   `;
@@ -236,21 +228,7 @@ function bindEvents() {
     render();
   });
 
-  document.querySelectorAll("[data-draft-customer]").forEach((select) => {
-    select.addEventListener("change", async () => {
-      const customerId = select.value;
-      const draftRowId = select.dataset.draftCustomer;
-
-      if (!customerId) return;
-
-      await ensureOrder(customerId, state.weekId);
-
-      state.draftRows = state.draftRows.filter((row) => row.id !== draftRowId);
-
-      await loadData();
-      render();
-    });
-  });
+  bindCustomerAutocomplete();
 
   document.querySelectorAll("[data-order-cell]").forEach((cell) => {
     cell.addEventListener("click", () => {
@@ -260,6 +238,129 @@ function bindEvents() {
   });
 
   initRowDragAndDrop();
+}
+
+function bindCustomerAutocomplete() {
+  const portal = document.querySelector("#customerSuggestionPortal");
+
+  document.querySelectorAll("[data-draft-customer-input]").forEach((input) => {
+    const draftRowId = input.dataset.draftCustomerInput;
+
+    input.addEventListener("input", () => {
+      const query = input.value.trim().toLowerCase();
+
+      if (!query) {
+        hideSuggestions(portal);
+        return;
+      }
+
+      const matches = getAvailableCustomers().filter((customer) =>
+        customer.name.toLowerCase().startsWith(query)
+      );
+
+      positionSuggestionPortal(portal, input);
+
+      if (!matches.length) {
+        portal.innerHTML = `
+          <div class="customer-suggestion-empty">
+            No customer found
+          </div>
+        `;
+
+        portal.classList.remove("hidden");
+        return;
+      }
+
+      portal.innerHTML = matches
+        .map(
+          (customer) => `
+            <button
+              type="button"
+              class="customer-suggestion"
+              data-select-customer="${draftRowId}:${customer.id}"
+            >
+              ${customer.name}
+            </button>
+          `
+        )
+        .join("");
+
+      portal.classList.remove("hidden");
+
+      portal.querySelectorAll("[data-select-customer]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const [, customerId] = button.dataset.selectCustomer.split(":");
+
+          await ensureOrder(customerId, state.weekId);
+
+          state.draftRows = state.draftRows.filter(
+            (row) => row.id !== draftRowId
+          );
+
+          hideSuggestions(portal);
+
+          await loadData();
+          render();
+        });
+      });
+    });
+
+    input.addEventListener("keydown", async (event) => {
+      if (event.key !== "Enter") return;
+
+      event.preventDefault();
+
+      const customerName = input.value.trim().toLowerCase();
+
+      const customer = getAvailableCustomers().find(
+        (item) => item.name.toLowerCase() === customerName
+      );
+
+      if (!customer) return;
+
+      await ensureOrder(customer.id, state.weekId);
+
+      state.draftRows = state.draftRows.filter((row) => row.id !== draftRowId);
+
+      hideSuggestions(portal);
+
+      await loadData();
+      render();
+    });
+
+    input.addEventListener("focus", () => {
+      const query = input.value.trim().toLowerCase();
+
+      if (!query) return;
+
+      positionSuggestionPortal(portal, input);
+      portal.classList.remove("hidden");
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      event.target.closest(".customer-autocomplete") ||
+      event.target.closest("#customerSuggestionPortal")
+    ) {
+      return;
+    }
+
+    hideSuggestions(portal);
+  });
+}
+
+function positionSuggestionPortal(portal, input) {
+  const rect = input.getBoundingClientRect();
+
+  portal.style.left = `${rect.left}px`;
+  portal.style.top = `${rect.bottom + 4}px`;
+  portal.style.width = `${rect.width}px`;
+}
+
+function hideSuggestions(portal) {
+  portal.classList.add("hidden");
+  portal.innerHTML = "";
 }
 
 function openOrderModal(orderId, productId) {
