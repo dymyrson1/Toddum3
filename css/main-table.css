@@ -486,3 +486,22 @@
     grid-template-columns: 1fr 80px 80px;
   }
 }
+
+/* Drag handle alignment */
+.customer-cell {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.customer-cell .drag-handle {
+  justify-self: start;
+}
+
+.customer-cell strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
