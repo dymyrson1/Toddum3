@@ -68,7 +68,7 @@ tabButtons.forEach((button) => {
 
 listenToAuthState((user) => {
   if (user) {
-    showAppView();
+    showAppView();\n    initTheme();
     switchTab("main");
 
     initInnstillinger();
@@ -78,3 +78,33 @@ listenToAuthState((user) => {
     showAuthView();
   }
 });
+\n
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  updateThemeIcon(theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  applyTheme(current === "light" ? "dark" : "light");
+}
+
+function updateThemeIcon(theme) {
+  const button = document.querySelector("#themeToggleBtn");
+
+  if (!button) return;
+
+  button.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+
+  const button = document.querySelector("#themeToggleBtn");
+
+  if (button) {
+    button.addEventListener("click", toggleTheme);
+  }
+}
