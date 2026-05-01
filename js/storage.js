@@ -35,12 +35,12 @@ export async function getCustomers() {
   return sortByOrder(customers);
 }
 
-export async function addCustomer(name) {
+export async function addCustomer({ name, contactPerson, address, phone }) {
   return addDoc(collection(db, "customers"), {
     name: name.trim(),
-    contactPerson: "",
-    address: "",
-    phone: "",
+    contactPerson: contactPerson.trim(),
+    address: address.trim(),
+    phone: phone.trim(),
     active: true,
     order: Date.now(),
     createdAt: serverTimestamp(),

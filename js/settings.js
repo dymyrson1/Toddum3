@@ -139,8 +139,11 @@ async function render() {
                 .join("")}
             </div>
           
-        <form id="addCustomerForm" class="settings-add-bar">
-          <input id="customerName" placeholder="New customer name" required />
+        <form id="addCustomerForm" class="settings-add-bar customer-add-bar">
+          <input name="name" placeholder="Customer name" required />
+          <input name="contactPerson" placeholder="Kontaktperson" />
+          <input name="address" placeholder="Address" />
+          <input name="phone" placeholder="Phone" />
           <button type="submit">Add customer</button>
         </form>
 
