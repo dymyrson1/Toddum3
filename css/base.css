@@ -185,3 +185,33 @@ button {
 :root[data-theme="dark"] .order-modal-backdrop {
   background: rgba(0, 0, 0, 0.65);
 }
+
+/* Dark theme hover fixes */
+:root[data-theme="dark"] .customer-row:hover,
+:root[data-theme="dark"] .draft-row {
+  background: var(--surface-hover);
+}
+
+:root[data-theme="dark"] .order-cell:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+:root[data-theme="dark"] .customer-row:hover .customer-cell,
+:root[data-theme="dark"] .customer-row:hover .actions-cell {
+  background: var(--surface-hover);
+}
+
+:root[data-theme="dark"] .filled-cell {
+  background: rgba(59, 130, 246, 0.16);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .filled-cell:hover {
+  background: rgba(59, 130, 246, 0.24);
+}
+
+:root[data-theme="dark"] .filled-cell .cell-line,
+:root[data-theme="dark"] .filled-cell .cell-line span,
+:root[data-theme="dark"] .filled-cell .cell-line strong {
+  color: var(--text);
+}
