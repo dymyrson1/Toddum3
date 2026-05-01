@@ -125,3 +125,12 @@ button {
   padding: 6px 10px;
   border-radius: 8px;
 }
+
+.theme-toggle-btn {
+  pointer-events: auto;
+  position: relative;
+  z-index: 20;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
