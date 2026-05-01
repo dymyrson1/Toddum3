@@ -1,7 +1,7 @@
 import {
-  getCustomers,
-  getProducts,
-  updateCustomer,
+  getKunder,
+  getProdukter,
+  updateKunde,
   getISOWeekId,
   getOrdersByWeek,
   getOrderItemsByOrderIds,
@@ -29,7 +29,7 @@ export async function initMainTable() {
 }
 
 async function loadData() {
-  const [customers, products] = await Promise.all([getCustomers(), getProducts()]);
+  const [customers, products] = await Promise.all([getKunder(), getProdukter()]);
 
   state.customers = customers;
   state.products = products.filter((product) => product.active);
@@ -63,23 +63,23 @@ async function goToNextWeek() {
   render();
 }
 
-async function goToCurrentWeek() {
+async function goToNåværendeWeek() {
   setWeekFromDate(new Date());
 
   await loadData();
   render();
 }
 
-function isCurrentWeek() {
+function isNåværendeWeek() {
   return state.weekId === getISOWeekId(new Date());
 }
 
-function isWeekUnlocked() {
-  return isCurrentWeek() || state.unlockedWeeks.has(state.weekId);
+function isWeekUlåst() {
+  return isNåværendeWeek() || state.unlockedWeeks.has(state.weekId);
 }
 
 function toggleWeekLock() {
-  if (isCurrentWeek()) return;
+  if (isNåværendeWeek()) return;
 
   if (state.unlockedWeeks.has(state.weekId)) {
     state.unlockedWeeks.delete(state.weekId);
@@ -90,7 +90,7 @@ function toggleWeekLock() {
   render();
 }
 
-function getCustomerById(customerId) {
+function getKundeById(customerId) {
   return state.customers.find((customer) => customer.id === customerId);
 }
 
@@ -98,17 +98,17 @@ function getVisibleOrders() {
   return state.orders
     .map((order) => ({
       ...order,
-      customer: getCustomerById(order.customerId),
+      customer: getKundeById(order.customerId),
     }))
     .filter((order) => order.customer)
     .sort((a, b) => (a.customer.order ?? 0) - (b.customer.order ?? 0));
 }
 
-function getAvailableCustomers() {
-  const usedCustomerIds = new Set(state.orders.map((order) => order.customerId));
+function getAvailableKunder() {
+  const usedKundeIds = new Set(state.orders.map((order) => order.customerId));
 
   return state.customers.filter(
-    (customer) => customer.active && !usedCustomerIds.has(customer.id),
+    (customer) => customer.active && !usedKundeIds.has(customer.id),
   );
 }
 
@@ -121,7 +121,7 @@ function getCellItems(orderId, productId) {
   );
 }
 
-function getPackagingName(productId, packagingId) {
+function getEmballasjeNavn(productId, packagingId) {
   const product = state.products.find((item) => item.id === productId);
   const packaging = (product?.packaging || []).find((item) => item.id === packagingId);
 
@@ -150,7 +150,7 @@ function renderCell(orderId, productId) {
     .map(
       (item) => `
         <div class="cell-line">
-          <span>${getPackagingName(productId, item.packagingId)}</span>
+          <span>${getEmballasjeNavn(productId, item.packagingId)}</span>
           <strong>${item.quantity}</strong>
         </div>
       `,
@@ -165,7 +165,7 @@ function renderDraftRow(draftRow) {
         <div class="customer-autocomplete">
           <input
             type="text"
-            placeholder="Start typing customer..."
+            placeholder="Begynn å skrive kundenavn..."
             autocomplete="off"
             data-draft-customer-input="${draftRow.id}"
           />
@@ -188,41 +188,41 @@ function renderDraftRow(draftRow) {
 function render() {
   const productCount = state.products.length;
   const visibleOrders = getVisibleOrders();
-  const canEdit = isWeekUnlocked();
+  const canEdit = isWeekUlåst();
 
   container.innerHTML = `
     <section class="main-table-view ${canEdit ? "" : "week-locked"}">
       <div class="main-table-toolbar">
         <div>
-          <h2>Main table</h2>
+          <h2>Bestillinger</h2>
           <p>
-            Week: <strong>${state.weekId}</strong>
+            Uke: <strong>${state.weekId}</strong>
             ${
               canEdit
-                ? `<span class="week-status unlocked">Unlocked</span>`
-                : `<span class="week-status locked">Locked</span>`
+                ? `<span class="week-status unlocked">Ulåst</span>`
+                : `<span class="week-status locked">Låst</span>`
             }
           </p>
         </div>
 
         <div class="week-controls">
-          <button type="button" id="previousWeekBtn">← Previous</button>
-          <button type="button" id="currentWeekBtn">Current</button>
-          <button type="button" id="nextWeekBtn">Next →</button>
+          <button type="button" id="previousWeekBtn">← Forrige</button>
+          <button type="button" id="currentWeekBtn">Nåværende</button>
+          <button type="button" id="nextWeekBtn">Neste →</button>
 
           ${
-            isCurrentWeek()
+            isNåværendeWeek()
               ? ""
               : `
                 <button type="button" id="toggleWeekLockBtn">
-                  ${canEdit ? "🔓 Lock" : "🔒 Unlock"}
+                  ${canEdit ? "🔓 Lås" : "🔒 Lås opp"}
                 </button>
               `
           }
         </div>
 
         <button type="button" id="addRowBtn" ${canEdit ? "" : "disabled"}>
-          + Add row
+          + Legg til row
         </button>
       </div>
 
@@ -231,14 +231,14 @@ function render() {
           ? ""
           : `
             <div class="locked-week-message">
-              🔒 This week is locked. Unlock it to edit old data.
+              🔒 Denne uken er låst. Lås opp for å redigere gamle data.
             </div>
           `
       }
 
       <div class="order-grid" style="--product-count: ${productCount};">
         <div class="order-grid-header order-grid-row">
-          <div class="order-grid-cell customer-cell">Customer</div>
+          <div class="order-grid-cell customer-cell">Kunde</div>
 
           ${state.products
             .map(
@@ -250,7 +250,7 @@ function render() {
             )
             .join("")}
 
-          <div class="order-grid-cell actions-cell">Actions</div>
+          <div class="order-grid-cell actions-cell">Handlinger</div>
         </div>
 
         <div class="order-grid-body">
@@ -289,7 +289,7 @@ function render() {
                       type="button"
                       class="remove-row-btn"
                       data-remove-order="${order.id}"
-                      title="Remove row"
+                      title="Fjern row"
                       ${canEdit ? "" : "disabled"}
                     >
                       ×
@@ -306,7 +306,7 @@ function render() {
             !visibleOrders.length && (!canEdit || !state.draftRows.length)
               ? `
                 <div class="empty-main-table">
-                  ${canEdit ? "Click Add row to add a customer for this week." : "No rows for this week."}
+                  ${canEdit ? "Click Legg til row to add a customer for this week." : "Ingen rader for denne uken."}
                 </div>
               `
               : ""
@@ -324,7 +324,7 @@ function render() {
 
 function bindEvents() {
   document.querySelector("#previousWeekBtn").addEventListener("click", goToPreviousWeek);
-  document.querySelector("#currentWeekBtn").addEventListener("click", goToCurrentWeek);
+  document.querySelector("#currentWeekBtn").addEventListener("click", goToNåværendeWeek);
   document.querySelector("#nextWeekBtn").addEventListener("click", goToNextWeek);
 
   const toggleWeekLockBtn = document.querySelector("#toggleWeekLockBtn");
@@ -345,9 +345,9 @@ function bindEvents() {
     });
   }
 
-  if (!isWeekUnlocked()) return;
+  if (!isWeekUlåst()) return;
 
-  bindCustomerAutocomplete();
+  bindKundeAutocomplete();
 
   document.querySelectorAll("[data-order-cell]").forEach((cell) => {
     cell.addEventListener("click", () => {
@@ -361,7 +361,7 @@ function bindEvents() {
       const orderId = button.dataset.removeOrder;
 
       const confirmed = confirm(
-        "Remove this row from the current week? Customer will remain in Settings.",
+        "Fjern this row from the current week? Kunde will remain in Innstillinger.",
       );
 
       if (!confirmed) return;
@@ -376,11 +376,11 @@ function bindEvents() {
   initRowDragAndDrop();
 }
 
-function bindCustomerAutocomplete() {
+function bindKundeAutocomplete() {
   const portal = document.querySelector("#customerSuggestionPortal");
 
   document.querySelectorAll("[data-draft-customer-input]").forEach((input) => {
-    const draftRowId = input.dataset.draftCustomerInput;
+    const draftRowId = input.dataset.draftKundeInput;
 
     input.addEventListener("input", () => {
       const query = input.value.trim().toLowerCase();
@@ -390,7 +390,7 @@ function bindCustomerAutocomplete() {
         return;
       }
 
-      const matches = getAvailableCustomers().filter((customer) =>
+      const matches = getAvailableKunder().filter((customer) =>
         customer.name.toLowerCase().startsWith(query),
       );
 
@@ -399,7 +399,7 @@ function bindCustomerAutocomplete() {
       if (!matches.length) {
         portal.innerHTML = `
           <div class="customer-suggestion-empty">
-            No customer found
+            Fant ingen kunde
           </div>
         `;
 
@@ -425,7 +425,7 @@ function bindCustomerAutocomplete() {
 
       portal.querySelectorAll("[data-select-customer]").forEach((button) => {
         button.addEventListener("click", async () => {
-          const [, customerId] = button.dataset.selectCustomer.split(":");
+          const [, customerId] = button.dataset.selectKunde.split(":");
 
           await ensureOrder(customerId, state.weekId);
 
@@ -444,10 +444,10 @@ function bindCustomerAutocomplete() {
 
       event.preventDefault();
 
-      const customerName = input.value.trim().toLowerCase();
+      const customerNavn = input.value.trim().toLowerCase();
 
-      const customer = getAvailableCustomers().find(
-        (item) => item.name.toLowerCase() === customerName,
+      const customer = getAvailableKunder().find(
+        (item) => item.name.toLowerCase() === customerNavn,
       );
 
       if (!customer) return;
@@ -512,7 +512,7 @@ function openOrderModal(orderId, productId) {
       <div class="order-modal-header">
         <div>
           <h3>${product.name}</h3>
-          <p>Edit quantities by packaging</p>
+          <p>Rediger antall per emballasje</p>
         </div>
 
         <button type="button" data-close-modal>×</button>
@@ -521,9 +521,9 @@ function openOrderModal(orderId, productId) {
       <form id="orderModalForm" class="order-modal-form">
         <div class="order-modal-table">
           <div class="order-modal-table-row order-modal-table-head">
-            <div>Packaging</div>
-            <div>Weight</div>
-            <div>Qty</div>
+            <div>Emballasje</div>
+            <div>Vekt</div>
+            <div>Antall</div>
           </div>
 
           ${
@@ -554,15 +554,15 @@ function openOrderModal(orderId, productId) {
                   .join("")
               : `
                 <div class="order-modal-empty">
-                  No packaging registered for this product.
+                  Ingen emballasje registrert for dette produktet.
                 </div>
               `
           }
         </div>
 
         <div class="order-modal-actions">
-          <button type="button" class="secondary-btn" data-close-modal>Cancel</button>
-          <button type="submit">Save</button>
+          <button type="button" class="secondary-btn" data-close-modal>Avbryt</button>
+          <button type="submit">Lagre</button>
         </div>
       </form>
     </div>
@@ -611,7 +611,7 @@ function initRowDragAndDrop() {
     row.addEventListener("dragend", async () => {
       row.classList.remove("dragging");
 
-      await saveCustomerRowOrder();
+      await saveKundeRowOrder();
 
       draggedRow = null;
 
@@ -636,13 +636,13 @@ function initRowDragAndDrop() {
   });
 }
 
-async function saveCustomerRowOrder() {
+async function saveKundeRowOrder() {
   const rows = [...document.querySelectorAll(".customer-row")];
 
   const updates = rows.map((row, index) => {
     const customerId = row.dataset.customerRow;
 
-    return updateCustomer(customerId, {
+    return updateKunde(customerId, {
       order: index + 1,
     });
   });

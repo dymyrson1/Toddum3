@@ -1,5 +1,5 @@
 import { listenToAuthState, login, logout } from "./auth.js";
-import { initSettings } from "./settings.js";
+import { initInnstillinger } from "./settings.js";
 import { initMainTable } from "./main-table.js";
 import { initRapport } from "./rapport.js";
 
@@ -28,13 +28,13 @@ function showAppView() {
   appView.classList.remove("hidden");
 }
 
-function switchTab(tabName) {
+function switchTab(tabNavn) {
   tabButtons.forEach((button) => {
-    button.classList.toggle("active", button.dataset.tab === tabName);
+    button.classList.toggle("active", button.dataset.tab === tabNavn);
   });
 
   Object.entries(tabPanels).forEach(([name, panel]) => {
-    panel.classList.toggle("active", name === tabName);
+    panel.classList.toggle("active", name === tabNavn);
   });
 }
 
@@ -71,7 +71,7 @@ listenToAuthState((user) => {
     showAppView();
     switchTab("main");
 
-    initSettings();
+    initInnstillinger();
     initMainTable();
     initRapport();
   } else {

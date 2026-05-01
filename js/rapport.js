@@ -1,5 +1,5 @@
 import {
-  getProducts,
+  getProdukter,
   getISOWeekId,
   getOrdersByWeek,
   getOrderItemsByOrderIds,
@@ -21,7 +21,7 @@ export async function initRapport() {
 }
 
 async function loadData() {
-  state.products = await getProducts();
+  state.products = await getProdukter();
   state.orders = await getOrdersByWeek(state.weekId);
 
   const orderIds = state.orders.map((order) => order.id);
@@ -53,14 +53,14 @@ async function goToNextWeek() {
   render();
 }
 
-async function goToCurrentWeek() {
+async function goToNåværendeWeek() {
   setWeekFromDate(new Date());
 
   await loadData();
   render();
 }
 
-function getPackagingById(product, packagingId) {
+function getEmballasjeById(product, packagingId) {
   return (product.packaging || []).find((packaging) => packaging.id === packagingId);
 }
 
@@ -69,13 +69,13 @@ function buildRapportRows() {
     .filter((product) => product.active)
     .map((product) => {
       const productItems = state.items.filter(
-        (item) => item.productId === product.id && Number(item.quantity) > 0
+        (item) => item.productId === product.id && Number(item.quantity) > 0,
       );
 
       const packagingMap = new Map();
 
       productItems.forEach((item) => {
-        const packaging = getPackagingById(product, item.packagingId);
+        const packaging = getEmballasjeById(product, item.packagingId);
 
         if (!packaging) return;
 
@@ -84,13 +84,13 @@ function buildRapportRows() {
           name: packaging.name,
           weightGrams: Number(packaging.weightGrams || 0),
           quantity: 0,
-          totalWeightGrams: 0,
+          totalVektGrams: 0,
         };
 
         const quantity = Number(item.quantity || 0);
 
         current.quantity += quantity;
-        current.totalWeightGrams += quantity * Number(packaging.weightGrams || 0);
+        current.totalVektGrams += quantity * Number(packaging.weightGrams || 0);
 
         packagingMap.set(packaging.id, current);
       });
@@ -99,23 +99,23 @@ function buildRapportRows() {
 
       const totalUnits = packagingRows.reduce((sum, row) => sum + row.quantity, 0);
 
-      const totalWeightGrams = packagingRows.reduce(
-        (sum, row) => sum + row.totalWeightGrams,
-        0
+      const totalVektGrams = packagingRows.reduce(
+        (sum, row) => sum + row.totalVektGrams,
+        0,
       );
 
       return {
         productId: product.id,
-        productName: product.name,
+        productNavn: product.name,
         packagingRows,
         totalUnits,
-        totalWeightGrams,
+        totalVektGrams,
       };
     })
-    .filter((row) => row.totalUnits > 0 || row.totalWeightGrams > 0);
+    .filter((row) => row.totalUnits > 0 || row.totalVektGrams > 0);
 }
 
-function formatWeight(grams) {
+function formatVekt(grams) {
   if (grams >= 1000) {
     return `${(grams / 1000).toFixed(2)} kg`;
   }
@@ -123,7 +123,7 @@ function formatWeight(grams) {
   return `${grams} g`;
 }
 
-function renderPackagingBreakdown(packagingRows) {
+function renderEmballasjeBreakdown(packagingRows) {
   if (!packagingRows.length) {
     return `<span class="rapport-empty">—</span>`;
   }
@@ -138,9 +138,9 @@ function renderPackagingBreakdown(packagingRows) {
           </span>
 
           <span>${row.quantity} stk</span>
-          <span>${formatWeight(row.totalWeightGrams)}</span>
+          <span>${formatVekt(row.totalVektGrams)}</span>
         </div>
-      `
+      `,
     )
     .join("");
 }
@@ -150,44 +150,41 @@ function render() {
 
   const totalUnits = rows.reduce((sum, row) => sum + row.totalUnits, 0);
 
-  const totalWeightGrams = rows.reduce(
-    (sum, row) => sum + row.totalWeightGrams,
-    0
-  );
+  const totalVektGrams = rows.reduce((sum, row) => sum + row.totalVektGrams, 0);
 
   container.innerHTML = `
     <section class="rapport-view">
       <div class="rapport-toolbar">
         <div>
           <h2>Rapport</h2>
-          <p>Week: <strong>${state.weekId}</strong></p>
+          <p>Uke: <strong>${state.weekId}</strong></p>
         </div>
 
         <div class="week-controls">
-          <button type="button" id="rapportPreviousWeekBtn">Previous week</button>
-          <button type="button" id="rapportCurrentWeekBtn">Current week</button>
-          <button type="button" id="rapportNextWeekBtn">Next week</button>
+          <button type="button" id="rapportPreviousWeekBtn">Forrige uke</button>
+          <button type="button" id="rapportNåværendeWeekBtn">Nåværende week</button>
+          <button type="button" id="rapportNextWeekBtn">Neste uke</button>
         </div>
       </div>
 
       <div class="rapport-summary">
         <div class="rapport-summary-card">
-          <span>Total units</span>
+          <span>Totalt antall</span>
           <strong>${totalUnits}</strong>
         </div>
 
         <div class="rapport-summary-card">
-          <span>Total weight</span>
-          <strong>${formatWeight(totalWeightGrams)}</strong>
+          <span>Total vekt</span>
+          <strong>${formatVekt(totalVektGrams)}</strong>
         </div>
       </div>
 
       <div class="rapport-table">
         <div class="rapport-table-header rapport-table-row">
-          <div>Product</div>
-          <div>Packaging breakdown</div>
-          <div>Total units</div>
-          <div>Total weight</div>
+          <div>Produkt</div>
+          <div>Emballasje breakdown</div>
+          <div>Totalt antall</div>
+          <div>Total vekt</div>
         </div>
 
         <div class="rapport-table-body">
@@ -198,11 +195,11 @@ function render() {
                     (row) => `
                       <div class="rapport-table-row">
                         <div class="rapport-product-name">
-                          ${row.productName}
+                          ${row.productNavn}
                         </div>
 
                         <div>
-                          ${renderPackagingBreakdown(row.packagingRows)}
+                          ${renderEmballasjeBreakdown(row.packagingRows)}
                         </div>
 
                         <div>
@@ -210,15 +207,15 @@ function render() {
                         </div>
 
                         <div>
-                          <strong>${formatWeight(row.totalWeightGrams)}</strong>
+                          <strong>${formatVekt(row.totalVektGrams)}</strong>
                         </div>
                       </div>
-                    `
+                    `,
                   )
                   .join("")
               : `
                 <div class="rapport-empty-state">
-                  No production data for this week.
+                  Ingen produksjonsdata for denne uken.
                 </div>
               `
           }
@@ -236,10 +233,8 @@ function bindEvents() {
     .addEventListener("click", goToPreviousWeek);
 
   document
-    .querySelector("#rapportCurrentWeekBtn")
-    .addEventListener("click", goToCurrentWeek);
+    .querySelector("#rapportNåværendeWeekBtn")
+    .addEventListener("click", goToNåværendeWeek);
 
-  document
-    .querySelector("#rapportNextWeekBtn")
-    .addEventListener("click", goToNextWeek);
+  document.querySelector("#rapportNextWeekBtn").addEventListener("click", goToNextWeek);
 }
