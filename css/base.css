@@ -277,3 +277,25 @@ button {
   font-size: 0.9rem;
   text-align: center;
 }
+
+/* Auth view alignment fix */
+#authView {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto auto;
+  justify-content: center;
+  align-content: center;
+  row-gap: 28px;
+  padding: 24px;
+}
+
+#authView h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 2rem;
+}
+
+#loginForm {
+  width: min(440px, calc(100vw - 48px));
+  margin: 0 auto;
+}
