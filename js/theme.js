@@ -14,22 +14,23 @@ function toggleTheme() {
 }
 
 function updateThemeButton(theme) {
-  const button = document.querySelector("#themeToggleBtn");
-
-  if (!button) return;
-
-  button.textContent = theme === "dark" ? "☀️" : "🌙";
-  button.title = theme === "dark" ? "Lys modus" : "Mørk modus";
+  document.querySelectorAll("#themeToggleBtn").forEach((button) => {
+    button.textContent = theme === "dark" ? "☀️" : "🌙";
+    button.title = theme === "dark" ? "Lys modus" : "Mørk modus";
+  });
 }
 
 function initTheme() {
   applyTheme(getCurrentTheme());
 
-  const button = document.querySelector("#themeToggleBtn");
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("#themeToggleBtn");
 
-  if (!button) return;
+    if (!button) return;
 
-  button.addEventListener("click", toggleTheme);
+    event.preventDefault();
+    toggleTheme();
+  });
 }
 
 initTheme();
