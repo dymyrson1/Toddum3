@@ -54,11 +54,6 @@ async function render() {
           </div>
         </div>
 
-        <form id="addCustomerForm" class="settings-add-bar">
-          <input id="customerName" placeholder="New customer name" required />
-          <button type="submit">Add customer</button>
-        </form>
-
         <div class="settings-table-wrap">
           <div class="settings-table customer-table">
             <div class="settings-table-head customer-row">
@@ -143,7 +138,13 @@ async function render() {
                 )
                 .join("")}
             </div>
-          </div>
+          
+        <form id="addCustomerForm" class="settings-add-bar">
+          <input id="customerName" placeholder="New customer name" required />
+          <button type="submit">Add customer</button>
+        </form>
+
+</div>
         </div>
       </section>
 
@@ -154,11 +155,6 @@ async function render() {
             <p>${products.length} registered products</p>
           </div>
         </div>
-
-        <form id="addProductForm" class="settings-add-bar">
-          <input id="productName" placeholder="New product name" required />
-          <button type="submit">Add product</button>
-        </form>
 
         <div class="settings-table-wrap">
           <div class="settings-table product-table">
@@ -282,7 +278,12 @@ async function render() {
             </div>
           </div>
         </div>
-      </section>
+      
+        <form id="addProductForm" class="settings-add-bar">
+          <input id="productName" placeholder="New product name" required />
+          <button type="submit">Add product</button>
+        </form>
+</section>
     </div>
   `;
 
