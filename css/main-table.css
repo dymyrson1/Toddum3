@@ -16,7 +16,6 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--surface);
-  box-shadow: var(--soft-shadow);
 }
 
 .main-table-toolbar h2 {
@@ -78,7 +77,7 @@
 }
 
 /* =========================
-   Grid
+   Grid structure
    ========================= */
 
 .order-grid {
@@ -86,14 +85,13 @@
   border: 1px solid var(--border);
   border-radius: 14px;
   background: var(--surface);
-  box-shadow: var(--soft-shadow);
 }
 
 .order-grid-row {
   display: grid;
   grid-template-columns:
     220px
-    repeat(var(--product-count), minmax(110px, 1fr))
+    repeat(var(--product-count), minmax(120px, 1fr))
     64px;
   min-width: max-content;
 }
@@ -105,24 +103,53 @@
 .order-grid-header {
   position: sticky;
   top: 0;
-  z-index: 3;
+  z-index: 5;
   background: var(--header);
-  border-bottom: 1px solid var(--border);
+}
+
+.order-grid-header .order-grid-cell {
+  min-height: 38px;
+  background: var(--header);
+  font-weight: 700;
+  color: var(--text);
 }
 
 .order-grid-cell {
-  min-height: 40px;
-  padding: 6px 8px;
+  min-height: 44px;
+  padding: 7px 8px;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-size: 0.86rem;
+  background: inherit;
 }
 
 .order-grid-cell:last-child {
   border-right: none;
+}
+
+/* =========================
+   Rows
+   ========================= */
+
+.customer-row,
+.draft-row {
+  background: var(--surface);
+}
+
+.customer-row:nth-child(even) {
+  background: var(--surface-soft);
+}
+
+.customer-row:hover,
+.draft-row:hover {
+  background: var(--surface-hover);
+}
+
+.customer-row.dragging {
+  opacity: 0.45;
 }
 
 /* =========================
@@ -132,79 +159,28 @@
 .customer-cell {
   position: sticky;
   left: 0;
-  z-index: 2;
-  background: var(--surface-soft);
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  background: inherit;
 }
 
 .order-grid-header .customer-cell {
-  z-index: 4;
+  z-index: 6;
   background: var(--header);
 }
 
-.product-header-cell {
-  justify-content: center;
-  font-weight: 700;
-  text-align: center;
-}
-
-/* =========================
-   Actions column
-   ========================= */
-
-.actions-cell {
-  justify-content: center;
-  align-items: center;
-  background: var(--surface-soft);
-}
-
-.order-grid-header .actions-cell {
-  background: var(--header);
-  font-weight: 700;
-}
-
-.remove-row-btn {
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.remove-row-btn:hover {
-  background: var(--danger-soft);
-  color: var(--danger);
-}
-
-.week-locked .remove-row-btn {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
-/* =========================
-   Rows and cells
-   ========================= */
-
-.customer-row {
-  background: var(--surface);
-}
-
-.customer-row:nth-child(even) {
-  background: var(--surface-soft);
-}
-
-.customer-row:hover,
-.draft-row {
-  background: var(--surface-hover);
-}
-
-.customer-row.dragging {
-  opacity: 0.45;
+.customer-cell strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .drag-handle {
+  justify-self: start;
   cursor: grab;
   color: var(--muted);
   font-size: 15px;
@@ -216,14 +192,23 @@
   opacity: 0.4;
 }
 
+/* =========================
+   Product cells
+   ========================= */
+
+.product-header-cell {
+  justify-content: center;
+  text-align: center;
+}
+
 .order-cell {
   width: 100%;
-  min-height: 40px;
-  background: transparent;
+  min-height: 44px;
+  background: inherit;
   color: var(--text);
   border: none;
   border-radius: 0;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: stretch;
   flex-direction: column;
   cursor: pointer;
@@ -231,29 +216,31 @@
 }
 
 .order-cell:hover {
-  background: var(--surface-hover);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
-.filled-cell {
-  background: #eaf2ff;
-}
-
+.filled-cell,
 .filled-cell:hover {
-  background: #dbeafe;
-}
-
-.week-locked .order-cell {
-  cursor: not-allowed;
-  opacity: 0.78;
+  background: inherit;
 }
 
 .cell-line {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   width: 100%;
   font-size: 0.82rem;
-  line-height: 1.2;
+  line-height: 1.25;
+}
+
+.cell-line span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-line strong {
+  text-align: right;
 }
 
 .empty-cell,
@@ -268,8 +255,69 @@
 }
 
 /* =========================
-   Autocomplete
+   Actions column
    ========================= */
+
+.actions-cell {
+  justify-content: center;
+  align-items: center;
+  background: inherit;
+}
+
+.order-grid-header .actions-cell {
+  background: var(--header);
+}
+
+.remove-row-btn {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--danger-soft);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--danger);
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.12s ease,
+    background 0.12s ease;
+}
+
+.customer-row:hover .remove-row-btn,
+.customer-row:focus-within .remove-row-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.remove-row-btn:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.week-locked .remove-row-btn {
+  cursor: not-allowed;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* =========================
+   Locked state
+   ========================= */
+
+.week-locked .order-cell {
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+/* =========================
+   Draft row autocomplete
+   ========================= */
+
+.draft-row .customer-cell {
+  display: flex;
+}
 
 .customer-autocomplete {
   position: relative;
@@ -294,10 +342,10 @@
 
 .customer-suggestions {
   position: fixed;
-  z-index: 9999;
+  z-index: 99999;
   display: grid;
   gap: 2px;
-  max-height: 220px;
+  max-height: 240px;
   overflow: auto;
   padding: 6px;
   border: 1px solid var(--border);
@@ -305,25 +353,33 @@
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow);
+  pointer-events: auto;
 }
 
 .customer-suggestion {
   width: 100%;
-  padding: 7px 9px;
+  padding: 8px 10px;
   border-radius: 7px;
   border: none;
   background: var(--surface);
   color: var(--text);
   text-align: left;
-  font-size: 0.86rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .customer-suggestion:hover {
   background: var(--surface-hover);
 }
 
+.create-customer-suggestion {
+  font-weight: 700;
+  color: var(--accent);
+}
+
 .customer-suggestion-empty {
-  padding: 7px 9px;
+  padding: 8px 10px;
   color: var(--muted);
 }
 
@@ -348,8 +404,9 @@
   z-index: 101;
   width: min(520px, calc(100vw - 32px));
   margin: 10vh auto;
-  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 14px;
+  background: var(--surface);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
@@ -407,7 +464,7 @@
 .order-modal-table-row > div {
   display: flex;
   align-items: center;
-  min-height: 40px;
+  min-height: 38px;
   padding: 7px 9px;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
@@ -445,13 +502,41 @@
 }
 
 .secondary-btn {
+  border: 1px solid var(--border);
   background: var(--surface-soft);
   color: var(--text);
-  border: 1px solid var(--border);
 }
 
 .secondary-btn:hover {
   background: var(--surface-hover);
+  color: var(--text);
+}
+
+/* =========================
+   Dark theme precision fixes
+   ========================= */
+
+:root[data-theme="dark"] .customer-row,
+:root[data-theme="dark"] .draft-row {
+  background: var(--surface);
+}
+
+:root[data-theme="dark"] .customer-row:nth-child(even) {
+  background: var(--surface-soft);
+}
+
+:root[data-theme="dark"] .customer-row:hover,
+:root[data-theme="dark"] .draft-row:hover {
+  background: var(--surface-hover);
+}
+
+:root[data-theme="dark"] .order-cell:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+:root[data-theme="dark"] .filled-cell,
+:root[data-theme="dark"] .filled-cell:hover {
+  background: inherit;
   color: var(--text);
 }
 
@@ -485,83 +570,4 @@
   .order-modal-table-row {
     grid-template-columns: 1fr 80px 80px;
   }
-}
-
-/* Drag handle alignment */
-.customer-cell {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-}
-
-.customer-cell .drag-handle {
-  justify-self: start;
-}
-
-.customer-cell strong {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Keep table cells same color */
-.filled-cell,
-.filled-cell:hover {
-  background: transparent;
-}
-
-:root[data-theme="dark"] .filled-cell,
-:root[data-theme="dark"] .filled-cell:hover {
-  background: transparent;
-}
-
-/* Draft customer input width fix */
-.draft-row .customer-cell {
-  display: flex;
-}
-
-.draft-row .customer-autocomplete {
-  width: 100%;
-}
-
-.draft-row .customer-autocomplete input {
-  width: 100%;
-}
-
-/* Autocomplete clickability fix */
-.customer-suggestions {
-  pointer-events: auto;
-  z-index: 99999;
-}
-
-.customer-suggestion {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.order-grid,
-.order-grid-body,
-.order-grid-row,
-.order-grid-cell {
-  overflow: visible;
-}
-
-.create-customer-suggestion {
-  font-weight: 700;
-  color: var(--accent);
-}
-
-/* Show remove row button only on row hover */
-.remove-row-btn {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.12s ease;
-}
-
-.customer-row:hover .remove-row-btn,
-.customer-row:focus-within .remove-row-btn {
-  opacity: 1;
-  pointer-events: auto;
 }
