@@ -1,11 +1,13 @@
 import {
   getCustomers,
   getProducts,
+  updateCustomer,
   getISOWeekId,
   getOrdersByWeek,
   getOrderItemsByOrderIds,
   ensureOrder,
   setOrderItem,
+  deleteOrder,
 } from "./storage.js";
 
 const container = document.querySelector("#mainTab");
@@ -131,12 +133,17 @@ function renderDraftRow(draftRow) {
           `
         )
         .join("")}
+
+      <div class="order-grid-cell actions-cell">
+        —
+      </div>
     </div>
   `;
 }
 
 function render() {
-  const columnCount = state.products.length;
+  const productCount = state.products.length;
+  const totalColumns = productCount + 2; // customer + products + actions
   const visibleOrders = getVisibleOrders();
 
   container.innerHTML = `
@@ -150,7 +157,8 @@ function render() {
         <button type="button" id="addRowBtn">Add row</button>
       </div>
 
-      <div class="order-grid" style="--product-count: ${columnCount};">
+      <div class="order-grid" style="--product-count: ${productCount};">
+        <!-- HEADER -->
         <div class="order-grid-header order-grid-row">
           <div class="order-grid-cell customer-cell">Customer</div>
 
@@ -163,8 +171,11 @@ function render() {
               `
             )
             .join("")}
+
+          <div class="order-grid-cell actions-cell">Actions</div>
         </div>
 
+        <!-- BODY -->
         <div class="order-grid-body">
           ${visibleOrders
             .map(
@@ -192,6 +203,16 @@ function render() {
                       `
                     )
                     .join("")}
+
+                  <div class="order-grid-cell actions-cell">
+                    <button
+                      type="button"
+                      class="remove-row-btn"
+                      data-remove-order="${order.id}"
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               `
             )
@@ -234,6 +255,23 @@ function bindEvents() {
     cell.addEventListener("click", () => {
       const [orderId, productId] = cell.dataset.orderCell.split(":");
       openOrderModal(orderId, productId);
+    });
+  });
+
+  document.querySelectorAll("[data-remove-order]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const orderId = button.dataset.removeOrder;
+
+      const confirmed = confirm(
+        "Remove this row from the current week? Customer will remain in Settings."
+      );
+
+      if (!confirmed) return;
+
+      await deleteOrder(orderId);
+
+      await loadData();
+      render();
     });
   });
 
@@ -465,9 +503,15 @@ function initRowDragAndDrop() {
       row.classList.add("dragging");
     });
 
-    row.addEventListener("dragend", () => {
+    row.addEventListener("dragend", async () => {
       row.classList.remove("dragging");
+
+      await saveCustomerRowOrder();
+
       draggedRow = null;
+
+      await loadData();
+      render();
     });
 
     row.addEventListener("dragover", (event) => {
@@ -485,6 +529,20 @@ function initRowDragAndDrop() {
       }
     });
   });
+}
+
+async function saveCustomerRowOrder() {
+  const rows = [...document.querySelectorAll(".customer-row")];
+
+  const updates = rows.map((row, index) => {
+    const customerId = row.dataset.customerRow;
+
+    return updateCustomer(customerId, {
+      order: index + 1,
+    });
+  });
+
+  await Promise.all(updates);
 }
 
 function getDragAfterElement(container, y) {

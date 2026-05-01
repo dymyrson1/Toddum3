@@ -29,8 +29,7 @@
    ========================= */
 
 .order-grid {
-  overflow-x: auto;
-  overflow-y: visible;
+  overflow: auto;
   border: 1px solid var(--border);
   border-radius: 18px;
   background: var(--card);
@@ -38,7 +37,10 @@
 
 .order-grid-row {
   display: grid;
-  grid-template-columns: 240px repeat(var(--product-count), minmax(140px, 1fr));
+  grid-template-columns:
+    240px
+    repeat(var(--product-count), minmax(140px, 1fr))
+    80px;
   min-width: max-content;
 }
 
@@ -68,15 +70,6 @@
   border-right: none;
 }
 
-.order-grid-body {
-  overflow: visible;
-}
-
-.customer-autocomplete {
-  position: relative;
-  z-index: 50;
-}
-
 
 /* =========================
    Sticky customer column
@@ -96,6 +89,38 @@
 
 .product-header-cell {
   font-weight: 700;
+}
+
+
+/* =========================
+   Actions column
+   ========================= */
+
+.actions-cell {
+  justify-content: center;
+  align-items: center;
+  background: #fffaf3;
+}
+
+.order-grid-header .actions-cell {
+  background: #eadfce;
+  font-weight: 700;
+}
+
+.remove-row-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.remove-row-btn:hover {
+  background: #f3d8d3;
+  color: var(--danger);
 }
 
 
@@ -189,7 +214,7 @@
 }
 
 .customer-suggestions {
- position: fixed;
+  position: fixed;
   z-index: 9999;
   display: grid;
   gap: 2px;
@@ -322,7 +347,10 @@
   }
 
   .order-grid-row {
-    grid-template-columns: 200px repeat(var(--product-count), minmax(120px, 1fr));
+    grid-template-columns:
+      200px
+      repeat(var(--product-count), minmax(120px, 1fr))
+      72px;
   }
 
   .order-modal-card {

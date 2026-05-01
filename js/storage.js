@@ -4,6 +4,7 @@ import {
   getDocs,
   doc,
   updateDoc,
+  deleteDoc,
   serverTimestamp,
   query,
   where,
@@ -301,4 +302,24 @@ export async function setOrderItem({
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function deleteOrderItemsByOrderId(orderId) {
+  const q = query(
+    collection(db, "orderItems"),
+    where("orderId", "==", orderId)
+  );
+
+  const snapshot = await getDocs(q);
+
+  const deletes = snapshot.docs.map((document) =>
+    deleteDoc(doc(db, "orderItems", document.id))
+  );
+
+  return Promise.all(deletes);
+}
+
+export async function deleteOrder(orderId) {
+  await deleteOrderItemsByOrderId(orderId);
+  return deleteDoc(doc(db, "orders", orderId));
 }
