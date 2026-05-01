@@ -63,23 +63,23 @@ async function goToNextWeek() {
   render();
 }
 
-async function goToNåværendeWeek() {
+async function goToCurrentWeek() {
   setWeekFromDate(new Date());
 
   await loadData();
   render();
 }
 
-function isNåværendeWeek() {
+function isCurrentWeek() {
   return state.weekId === getISOWeekId(new Date());
 }
 
-function isWeekUlåst() {
-  return isNåværendeWeek() || state.unlockedWeeks.has(state.weekId);
+function isWeekUnlocked() {
+  return isCurrentWeek() || state.unlockedWeeks.has(state.weekId);
 }
 
 function toggleWeekLock() {
-  if (isNåværendeWeek()) return;
+  if (isCurrentWeek()) return;
 
   if (state.unlockedWeeks.has(state.weekId)) {
     state.unlockedWeeks.delete(state.weekId);
@@ -90,7 +90,7 @@ function toggleWeekLock() {
   render();
 }
 
-function getKundeById(customerId) {
+function getCustomerById(customerId) {
   return state.customers.find((customer) => customer.id === customerId);
 }
 
@@ -98,17 +98,17 @@ function getVisibleOrders() {
   return state.orders
     .map((order) => ({
       ...order,
-      customer: getKundeById(order.customerId),
+      customer: getCustomerById(order.customerId),
     }))
     .filter((order) => order.customer)
     .sort((a, b) => (a.customer.order ?? 0) - (b.customer.order ?? 0));
 }
 
-function getAvailableKunder() {
-  const usedKundeIds = new Set(state.orders.map((order) => order.customerId));
+function getAvailableCustomers() {
+  const usedCustomerIds = new Set(state.orders.map((order) => order.customerId));
 
   return state.customers.filter(
-    (customer) => customer.active && !usedKundeIds.has(customer.id),
+    (customer) => customer.active && !usedCustomerIds.has(customer.id),
   );
 }
 
@@ -121,7 +121,7 @@ function getCellItems(orderId, productId) {
   );
 }
 
-function getEmballasjeNavn(productId, packagingId) {
+function getPackagingName(productId, packagingId) {
   const product = state.products.find((item) => item.id === productId);
   const packaging = (product?.packaging || []).find((item) => item.id === packagingId);
 
@@ -150,7 +150,7 @@ function renderCell(orderId, productId) {
     .map(
       (item) => `
         <div class="cell-line">
-          <span>${getEmballasjeNavn(productId, item.packagingId)}</span>
+          <span>${getPackagingName(productId, item.packagingId)}</span>
           <strong>${item.quantity}</strong>
         </div>
       `,
@@ -173,11 +173,7 @@ function renderDraftRow(draftRow) {
       </div>
 
       ${state.products
-        .map(
-          () => `
-            <div class="order-grid-cell draft-cell">—</div>
-          `,
-        )
+        .map(() => `<div class="order-grid-cell draft-cell">—</div>`)
         .join("")}
 
       <div class="order-grid-cell actions-cell">—</div>
@@ -188,7 +184,7 @@ function renderDraftRow(draftRow) {
 function render() {
   const productCount = state.products.length;
   const visibleOrders = getVisibleOrders();
-  const canEdit = isWeekUlåst();
+  const canEdit = isWeekUnlocked();
 
   container.innerHTML = `
     <section class="main-table-view ${canEdit ? "" : "week-locked"}">
@@ -211,7 +207,7 @@ function render() {
           <button type="button" id="nextWeekBtn">Neste →</button>
 
           ${
-            isNåværendeWeek()
+            isCurrentWeek()
               ? ""
               : `
                 <button type="button" id="toggleWeekLockBtn">
@@ -289,7 +285,7 @@ function render() {
                       type="button"
                       class="remove-row-btn"
                       data-remove-order="${order.id}"
-                      title="Fjern row"
+                      title="Fjern rad"
                       ${canEdit ? "" : "disabled"}
                     >
                       ×
@@ -306,7 +302,7 @@ function render() {
             !visibleOrders.length && (!canEdit || !state.draftRows.length)
               ? `
                 <div class="empty-main-table">
-                  ${canEdit ? "Click Legg til row to add a customer for this week." : "Ingen rader for denne uken."}
+                  ${canEdit ? "Klikk Legg til row for å legge til en kunde for denne uken." : "Ingen rader for denne uken."}
                 </div>
               `
               : ""
@@ -324,7 +320,7 @@ function render() {
 
 function bindEvents() {
   document.querySelector("#previousWeekBtn").addEventListener("click", goToPreviousWeek);
-  document.querySelector("#currentWeekBtn").addEventListener("click", goToNåværendeWeek);
+  document.querySelector("#currentWeekBtn").addEventListener("click", goToCurrentWeek);
   document.querySelector("#nextWeekBtn").addEventListener("click", goToNextWeek);
 
   const toggleWeekLockBtn = document.querySelector("#toggleWeekLockBtn");
@@ -345,9 +341,9 @@ function bindEvents() {
     });
   }
 
-  if (!isWeekUlåst()) return;
+  if (!isWeekUnlocked()) return;
 
-  bindKundeAutocomplete();
+  bindCustomerAutocomplete();
 
   document.querySelectorAll("[data-order-cell]").forEach((cell) => {
     cell.addEventListener("click", () => {
@@ -361,7 +357,7 @@ function bindEvents() {
       const orderId = button.dataset.removeOrder;
 
       const confirmed = confirm(
-        "Fjern this row from the current week? Kunde will remain in Innstillinger.",
+        "Fjerne denne raden fra gjeldende uke? Kunden blir værende i Innstillinger.",
       );
 
       if (!confirmed) return;
@@ -376,67 +372,18 @@ function bindEvents() {
   initRowDragAndDrop();
 }
 
-function bindKundeAutocomplete() {
+function bindCustomerAutocomplete() {
   const portal = document.querySelector("#customerSuggestionPortal");
 
   document.querySelectorAll("[data-draft-customer-input]").forEach((input) => {
-    const draftRowId = input.dataset.draftKundeInput;
+    const draftRowId = input.dataset.draftCustomerInput;
 
     input.addEventListener("input", () => {
-      const query = input.value.trim().toLowerCase();
+      renderCustomerSuggestions(portal, input, draftRowId);
+    });
 
-      if (!query) {
-        hideSuggestions(portal);
-        return;
-      }
-
-      const matches = getAvailableKunder().filter((customer) =>
-        customer.name.toLowerCase().startsWith(query),
-      );
-
-      positionSuggestionPortal(portal, input);
-
-      if (!matches.length) {
-        portal.innerHTML = `
-          <div class="customer-suggestion-empty">
-            Fant ingen kunde
-          </div>
-        `;
-
-        portal.classList.remove("hidden");
-        return;
-      }
-
-      portal.innerHTML = matches
-        .map(
-          (customer) => `
-            <button
-              type="button"
-              class="customer-suggestion"
-              data-select-customer="${draftRowId}:${customer.id}"
-            >
-              ${customer.name}
-            </button>
-          `,
-        )
-        .join("");
-
-      portal.classList.remove("hidden");
-
-      portal.querySelectorAll("[data-select-customer]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          const [, customerId] = button.dataset.selectKunde.split(":");
-
-          await ensureOrder(customerId, state.weekId);
-
-          state.draftRows = state.draftRows.filter((row) => row.id !== draftRowId);
-
-          hideSuggestions(portal);
-
-          await loadData();
-          render();
-        });
-      });
+    input.addEventListener("focus", () => {
+      renderCustomerSuggestions(portal, input, draftRowId);
     });
 
     input.addEventListener("keydown", async (event) => {
@@ -444,35 +391,32 @@ function bindKundeAutocomplete() {
 
       event.preventDefault();
 
-      const customerNavn = input.value.trim().toLowerCase();
+      const customerName = input.value.trim().toLowerCase();
 
-      const customer = getAvailableKunder().find(
-        (item) => item.name.toLowerCase() === customerNavn,
+      const customer = getAvailableCustomers().find(
+        (item) => item.name.toLowerCase() === customerName,
       );
 
       if (!customer) return;
 
-      await ensureOrder(customer.id, state.weekId);
-
-      state.draftRows = state.draftRows.filter((row) => row.id !== draftRowId);
-
-      hideSuggestions(portal);
-
-      await loadData();
-      render();
-    });
-
-    input.addEventListener("focus", () => {
-      const query = input.value.trim().toLowerCase();
-
-      if (!query) return;
-
-      positionSuggestionPortal(portal, input);
-      portal.classList.remove("hidden");
+      await addCustomerToWeek(customer.id, draftRowId);
     });
   });
 
-  document.addEventListener("click", (event) => {
+  portal.addEventListener("mousedown", async (event) => {
+    const option = event.target.closest("[data-select-customer]");
+
+    if (!option) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const [draftRowId, customerId] = option.dataset.selectCustomer.split(":");
+
+    await addCustomerToWeek(customerId, draftRowId);
+  });
+
+  document.addEventListener("mousedown", (event) => {
     if (
       event.target.closest(".customer-autocomplete") ||
       event.target.closest("#customerSuggestionPortal")
@@ -482,6 +426,61 @@ function bindKundeAutocomplete() {
 
     hideSuggestions(portal);
   });
+}
+
+function renderCustomerSuggestions(portal, input, draftRowId) {
+  const query = input.value.trim().toLowerCase();
+
+  if (!query) {
+    hideSuggestions(portal);
+    return;
+  }
+
+  const matches = getAvailableCustomers().filter((customer) =>
+    customer.name.toLowerCase().startsWith(query),
+  );
+
+  positionSuggestionPortal(portal, input);
+
+  if (!matches.length) {
+    portal.innerHTML = `
+      <div class="customer-suggestion-empty">
+        Fant ingen kunde
+      </div>
+    `;
+
+    portal.classList.remove("hidden");
+    return;
+  }
+
+  portal.innerHTML = matches
+    .map(
+      (customer) => `
+        <button
+          type="button"
+          class="customer-suggestion"
+          data-select-customer="${draftRowId}:${customer.id}"
+        >
+          ${customer.name}
+        </button>
+      `,
+    )
+    .join("");
+
+  portal.classList.remove("hidden");
+}
+
+async function addCustomerToWeek(customerId, draftRowId) {
+  const portal = document.querySelector("#customerSuggestionPortal");
+
+  await ensureOrder(customerId, state.weekId);
+
+  state.draftRows = state.draftRows.filter((row) => row.id !== draftRowId);
+
+  hideSuggestions(portal);
+
+  await loadData();
+  render();
 }
 
 function positionSuggestionPortal(portal, input) {
@@ -542,7 +541,7 @@ function openOrderModal(orderId, productId) {
                             name="${packaging.id}"
                             value="${getExistingQuantity(
                               orderId,
-                              productId,
+                              product.id,
                               packaging.id,
                             )}"
                             placeholder="0"
@@ -611,7 +610,7 @@ function initRowDragAndDrop() {
     row.addEventListener("dragend", async () => {
       row.classList.remove("dragging");
 
-      await saveKundeRowOrder();
+      await saveCustomerRowOrder();
 
       draggedRow = null;
 
@@ -636,7 +635,7 @@ function initRowDragAndDrop() {
   });
 }
 
-async function saveKundeRowOrder() {
+async function saveCustomerRowOrder() {
   const rows = [...document.querySelectorAll(".customer-row")];
 
   const updates = rows.map((row, index) => {
