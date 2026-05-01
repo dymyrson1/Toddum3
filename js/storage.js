@@ -133,12 +133,7 @@ export async function addPackaging(productId, name, weightGrams) {
   });
 }
 
-export async function updatePackaging(
-  productId,
-  packagingId,
-  name,
-  weightGrams,
-) {
+export async function updatePackaging(productId, packagingId, name, weightGrams) {
   const ref = doc(db, "products", productId);
 
   const products = await getProducts();
@@ -189,9 +184,7 @@ export async function removePackaging(productId, packagingId) {
 // ---------- WEEKS ----------
 
 export function getISOWeekId(date = new Date()) {
-  const d = new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
-  );
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   const dayNum = d.getUTCDay() || 7;
 
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
@@ -227,10 +220,7 @@ export async function getOrderItemsByOrderIds(orderIds) {
   const results = [];
 
   for (const chunk of chunks) {
-    const q = query(
-      collection(db, "orderItems"),
-      where("orderId", "in", chunk),
-    );
+    const q = query(collection(db, "orderItems"), where("orderId", "in", chunk));
     const snapshot = await getDocs(q);
 
     results.push(
@@ -276,12 +266,7 @@ export async function ensureOrder(customerId, weekId) {
   };
 }
 
-export async function setOrderItem({
-  orderId,
-  productId,
-  packagingId,
-  quantity,
-}) {
+export async function setOrderItem({ orderId, productId, packagingId, quantity }) {
   const normalizedQuantity = Number(quantity);
 
   const q = query(
@@ -315,10 +300,7 @@ export async function setOrderItem({
 }
 
 export async function deleteOrderItemsByOrderId(orderId) {
-  const q = query(
-    collection(db, "orderItems"),
-    where("orderId", "==", orderId),
-  );
+  const q = query(collection(db, "orderItems"), where("orderId", "==", orderId));
 
   const snapshot = await getDocs(q);
 

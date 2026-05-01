@@ -27,10 +27,7 @@ export async function initMainTable() {
 }
 
 async function loadData() {
-  const [customers, products] = await Promise.all([
-    getCustomers(),
-    getProducts(),
-  ]);
+  const [customers, products] = await Promise.all([getCustomers(), getProducts()]);
 
   state.customers = customers;
   state.products = products.filter((product) => product.active);
@@ -55,9 +52,7 @@ function getVisibleOrders() {
 }
 
 function getAvailableCustomers() {
-  const usedCustomerIds = new Set(
-    state.orders.map((order) => order.customerId),
-  );
+  const usedCustomerIds = new Set(state.orders.map((order) => order.customerId));
 
   return state.customers.filter(
     (customer) => customer.active && !usedCustomerIds.has(customer.id),
@@ -75,9 +70,7 @@ function getCellItems(orderId, productId) {
 
 function getPackagingName(productId, packagingId) {
   const product = state.products.find((item) => item.id === productId);
-  const packaging = (product?.packaging || []).find(
-    (item) => item.id === packagingId,
-  );
+  const packaging = (product?.packaging || []).find((item) => item.id === packagingId);
 
   return packaging?.name || "";
 }
@@ -333,9 +326,7 @@ function bindCustomerAutocomplete() {
 
           await ensureOrder(customerId, state.weekId);
 
-          state.draftRows = state.draftRows.filter(
-            (row) => row.id !== draftRowId,
-          );
+          state.draftRows = state.draftRows.filter((row) => row.id !== draftRowId);
 
           hideSuggestions(portal);
 
@@ -437,11 +428,7 @@ function openOrderModal(orderId, productId) {
                         min="0"
                         step="1"
                         name="${packaging.id}"
-                        value="${getExistingQuantity(
-                          orderId,
-                          productId,
-                          packaging.id,
-                        )}"
+                        value="${getExistingQuantity(orderId, productId, packaging.id)}"
                         placeholder="0"
                       />
                     </label>
@@ -467,27 +454,25 @@ function openOrderModal(orderId, productId) {
     element.addEventListener("click", closeOrderModal);
   });
 
-  modal
-    .querySelector("#orderModalForm")
-    .addEventListener("submit", async (event) => {
-      event.preventDefault();
+  modal.querySelector("#orderModalForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      for (const packaging of product.packaging || []) {
-        const input = event.target.elements[packaging.id];
+    for (const packaging of product.packaging || []) {
+      const input = event.target.elements[packaging.id];
 
-        await setOrderItem({
-          orderId,
-          productId,
-          packagingId: packaging.id,
-          quantity: input.value || 0,
-        });
-      }
+      await setOrderItem({
+        orderId,
+        productId,
+        packagingId: packaging.id,
+        quantity: input.value || 0,
+      });
+    }
 
-      closeOrderModal();
+    closeOrderModal();
 
-      await loadData();
-      render();
-    });
+    await loadData();
+    render();
+  });
 }
 
 function closeOrderModal() {
