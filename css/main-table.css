@@ -547,3 +547,8 @@
 .order-grid-cell {
   overflow: visible;
 }
+
+.create-customer-suggestion {
+  font-weight: 700;
+  color: var(--accent);
+}

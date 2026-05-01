@@ -1,5 +1,6 @@
 import {
   getCustomers,
+  addCustomer,
   getProducts,
   updateCustomer,
   getISOWeekId,
@@ -391,29 +392,44 @@ function bindCustomerAutocomplete() {
 
       event.preventDefault();
 
-      const customerName = input.value.trim().toLowerCase();
+      const customerName = input.value.trim();
 
-      const customer = getAvailableCustomers().find(
-        (item) => item.name.toLowerCase() === customerName,
+      if (!customerName) return;
+
+      const existingCustomer = getAvailableCustomers().find(
+        (item) => item.name.toLowerCase() === customerName.toLowerCase(),
       );
 
-      if (!customer) return;
+      if (existingCustomer) {
+        await addCustomerToWeek(existingCustomer.id, draftRowId);
+        return;
+      }
 
-      await addCustomerToWeek(customer.id, draftRowId);
+      await createCustomerAndAddToWeek(customerName, draftRowId);
     });
   });
 
   portal.addEventListener("mousedown", async (event) => {
     const option = event.target.closest("[data-select-customer]");
+    const createOption = event.target.closest("[data-create-customer]");
 
-    if (!option) return;
+    if (!option && !createOption) return;
 
     event.preventDefault();
     event.stopPropagation();
 
-    const [draftRowId, customerId] = option.dataset.selectCustomer.split(":");
+    if (option) {
+      const [draftRowId, customerId] = option.dataset.selectCustomer.split(":");
+      await addCustomerToWeek(customerId, draftRowId);
+      return;
+    }
 
-    await addCustomerToWeek(customerId, draftRowId);
+    if (createOption) {
+      const [draftRowId, encodedName] = createOption.dataset.createCustomer.split(":");
+      const customerName = decodeURIComponent(encodedName);
+
+      await createCustomerAndAddToWeek(customerName, draftRowId);
+    }
   });
 
   document.addEventListener("mousedown", (event) => {
@@ -429,31 +445,26 @@ function bindCustomerAutocomplete() {
 }
 
 function renderCustomerSuggestions(portal, input, draftRowId) {
-  const query = input.value.trim().toLowerCase();
+  const query = input.value.trim();
 
   if (!query) {
     hideSuggestions(portal);
     return;
   }
 
+  const normalizedQuery = query.toLowerCase();
+
   const matches = getAvailableCustomers().filter((customer) =>
-    customer.name.toLowerCase().startsWith(query),
+    customer.name.toLowerCase().startsWith(normalizedQuery),
+  );
+
+  const exactMatch = getAvailableCustomers().some(
+    (customer) => customer.name.toLowerCase() === normalizedQuery,
   );
 
   positionSuggestionPortal(portal, input);
 
-  if (!matches.length) {
-    portal.innerHTML = `
-      <div class="customer-suggestion-empty">
-        Fant ingen kunde
-      </div>
-    `;
-
-    portal.classList.remove("hidden");
-    return;
-  }
-
-  portal.innerHTML = matches
+  const matchButtons = matches
     .map(
       (customer) => `
         <button
@@ -467,7 +478,31 @@ function renderCustomerSuggestions(portal, input, draftRowId) {
     )
     .join("");
 
+  const createButton = exactMatch
+    ? ""
+    : `
+      <button
+        type="button"
+        class="customer-suggestion create-customer-suggestion"
+        data-create-customer="${draftRowId}:${encodeURIComponent(query)}"
+      >
+        + Opprett ny kunde: ${query}
+      </button>
+    `;
+
+  portal.innerHTML = matchButtons + createButton;
   portal.classList.remove("hidden");
+}
+
+async function createCustomerAndAddToWeek(customerName, draftRowId) {
+  const ref = await addCustomer({
+    name: customerName,
+    contactPerson: "",
+    address: "",
+    phone: "",
+  });
+
+  await addCustomerToWeek(ref.id, draftRowId);
 }
 
 async function addCustomerToWeek(customerId, draftRowId) {
