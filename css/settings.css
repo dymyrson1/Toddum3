@@ -283,3 +283,28 @@
     grid-template-columns: 1fr;
   }
 }
+/* =========================
+   Autosave indicator
+   ========================= */
+
+.settings-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-save-status {
+  opacity: 0;
+  transform: translateY(-2px);
+  color: var(--success-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.settings-save-status.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

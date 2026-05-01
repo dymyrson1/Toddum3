@@ -16,6 +16,23 @@ import {
 
 const container = document.querySelector("#settingsTab");
 
+let saveStatusTimer = null;
+
+function showSaveStatus(message = "Saved") {
+  let status = document.querySelector("#settingsSaveStatus");
+
+  if (!status) return;
+
+  status.textContent = message;
+  status.classList.add("visible");
+
+  clearTimeout(saveStatusTimer);
+
+  saveStatusTimer = setTimeout(() => {
+    status.classList.remove("visible");
+  }, 1400);
+}
+
 export async function initSettings() {
   render();
 }
@@ -119,7 +136,7 @@ async function render() {
                         }
                       </div>
                     </div>
-                  `
+                  `,
                 )
                 .join("")}
             </div>
@@ -211,7 +228,7 @@ async function render() {
                                     </button>
                                   </div>
                                 </div>
-                              `
+                              `,
                             )
                             .join("")}
                         </div>
@@ -256,7 +273,7 @@ async function render() {
                         }
                       </div>
                     </div>
-                  `
+                  `,
                 )
                 .join("")}
             </div>
@@ -284,16 +301,14 @@ function bindEvents() {
 }
 
 function bindAddCustomer() {
-  document
-    .querySelector("#addCustomerForm")
-    .addEventListener("submit", async (event) => {
-      event.preventDefault();
+  document.querySelector("#addCustomerForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      const input = document.querySelector("#customerName");
-      await addCustomer(input.value);
+    const input = document.querySelector("#customerName");
+    await addCustomer(input.value);
 
-      render();
-    });
+    render();
+  });
 }
 
 function bindCustomerAutosave() {
@@ -304,6 +319,8 @@ function bindCustomerAutosave() {
       await updateCustomer(customerId, {
         [fieldName]: input.value.trim(),
       });
+
+      showSaveStatus();
     });
 
     input.addEventListener("keydown", (event) => {
@@ -319,7 +336,7 @@ function bindCustomerStatusActions() {
   document.querySelectorAll("[data-disable-customer]").forEach((button) => {
     button.addEventListener("click", async () => {
       const confirmed = confirm(
-        "Deactivate this customer? Old weeks will keep their history."
+        "Deactivate this customer? Old weeks will keep their history.",
       );
 
       if (!confirmed) return;
@@ -338,16 +355,14 @@ function bindCustomerStatusActions() {
 }
 
 function bindAddProduct() {
-  document
-    .querySelector("#addProductForm")
-    .addEventListener("submit", async (event) => {
-      event.preventDefault();
+  document.querySelector("#addProductForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      const input = document.querySelector("#productName");
-      await addProduct(input.value);
+    const input = document.querySelector("#productName");
+    await addProduct(input.value);
 
-      render();
-    });
+    render();
+  });
 }
 
 function bindProductAutosave() {
@@ -358,6 +373,8 @@ function bindProductAutosave() {
       await updateProduct(productId, {
         [fieldName]: input.value.trim(),
       });
+
+      showSaveStatus();
     });
 
     input.addEventListener("keydown", (event) => {
@@ -373,7 +390,7 @@ function bindProductStatusActions() {
   document.querySelectorAll("[data-disable-product]").forEach((button) => {
     button.addEventListener("click", async () => {
       const confirmed = confirm(
-        "Deactivate this product? Old weeks will keep their history."
+        "Deactivate this product? Old weeks will keep their history.",
       );
 
       if (!confirmed) return;
@@ -413,19 +430,21 @@ function bindPackagingAutosave() {
       const [productId, packagingId] = input.dataset.packagingField.split(":");
 
       const nameInput = document.querySelector(
-        `[data-packaging-field="${productId}:${packagingId}:name"]`
+        `[data-packaging-field="${productId}:${packagingId}:name"]`,
       );
 
       const weightInput = document.querySelector(
-        `[data-packaging-field="${productId}:${packagingId}:weightGrams"]`
+        `[data-packaging-field="${productId}:${packagingId}:weightGrams"]`,
       );
 
       await updatePackaging(
         productId,
         packagingId,
         nameInput.value.trim(),
-        weightInput.value
+        weightInput.value,
       );
+
+      showSaveStatus();
     });
 
     input.addEventListener("keydown", (event) => {
