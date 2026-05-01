@@ -1,0 +1,173 @@
+/* =========================
+   Rapport layout
+   ========================= */
+
+.rapport-view {
+  display: grid;
+  gap: 14px;
+}
+
+.rapport-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.rapport-toolbar h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.rapport-toolbar p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* =========================
+   Summary
+   ========================= */
+
+.rapport-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.rapport-summary-card {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
+
+.rapport-summary-card span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.rapport-summary-card strong {
+  font-size: 1.25rem;
+}
+
+/* =========================
+   Rapport table
+   ========================= */
+
+.rapport-table {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+.rapport-table-row {
+  display: grid;
+  grid-template-columns: 170px minmax(360px, 1fr) 110px 130px;
+  min-width: 770px;
+}
+
+.rapport-table-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--header);
+  font-weight: 700;
+}
+
+.rapport-table-row > div {
+  padding: 9px 10px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+
+.rapport-table-row > div:last-child {
+  border-right: none;
+}
+
+.rapport-table-body .rapport-table-row:nth-child(even) {
+  background: var(--surface-soft);
+}
+
+.rapport-table-body .rapport-table-row:hover {
+  background: var(--surface-hover);
+}
+
+.rapport-product-name {
+  font-weight: 700;
+}
+
+/* =========================
+   Packaging breakdown
+   ========================= */
+
+.rapport-packaging-line {
+  display: grid;
+  grid-template-columns: 1fr 80px 100px;
+  gap: 12px;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.rapport-packaging-line + .rapport-packaging-line {
+  border-top: 1px solid var(--border);
+}
+
+.rapport-packaging-line small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.rapport-packaging-line span:nth-child(2),
+.rapport-packaging-line span:nth-child(3) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* =========================
+   Empty states
+   ========================= */
+
+.rapport-empty,
+.rapport-empty-state {
+  color: var(--muted);
+}
+
+.rapport-empty-state {
+  padding: 22px;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 900px) {
+  .rapport-toolbar {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .week-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 720px) {
+  .rapport-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .rapport-table-row {
+    grid-template-columns: 150px minmax(300px, 1fr) 100px 120px;
+  }
+}

@@ -4,42 +4,97 @@
 
 .main-table-view {
   display: grid;
-  gap: 18px;
+  gap: 12px;
 }
 
 .main-table-toolbar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
 }
 
 .main-table-toolbar h2 {
   margin: 0;
+  font-size: 1.12rem;
 }
 
 .main-table-toolbar p {
-  margin: 4px 0 0;
+  margin: 3px 0 0;
   color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.week-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.week-controls button,
+#addRowBtn {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 0.84rem;
+  white-space: nowrap;
 }
 
 /* =========================
-   Order grid
+   Week status
+   ========================= */
+
+.week-status {
+  display: inline-flex;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.week-status.unlocked {
+  background: var(--success-soft);
+  color: var(--success-text);
+}
+
+.week-status.locked {
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+.locked-week-message {
+  padding: 9px 12px;
+  border: 1px solid var(--warning-soft);
+  border-radius: 10px;
+  background: var(--warning-soft);
+  color: var(--warning-text);
+  font-size: 0.88rem;
+}
+
+/* =========================
+   Grid
    ========================= */
 
 .order-grid {
   overflow: auto;
   border: 1px solid var(--border);
-  border-radius: 18px;
-  background: var(--card);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
 }
 
 .order-grid-row {
   display: grid;
   grid-template-columns:
-    240px
-    repeat(var(--product-count), minmax(140px, 1fr))
-    80px;
+    220px
+    repeat(var(--product-count), minmax(110px, 1fr))
+    64px;
   min-width: max-content;
 }
 
@@ -51,18 +106,19 @@
   position: sticky;
   top: 0;
   z-index: 3;
-  background: #eadfce;
+  background: var(--header);
   border-bottom: 1px solid var(--border);
 }
 
 .order-grid-cell {
-  min-height: 54px;
-  padding: 10px 12px;
+  min-height: 40px;
+  padding: 6px 8px;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  font-size: 0.86rem;
 }
 
 .order-grid-cell:last-child {
@@ -70,23 +126,25 @@
 }
 
 /* =========================
-   Sticky customer column
+   Customer column
    ========================= */
 
 .customer-cell {
   position: sticky;
   left: 0;
   z-index: 2;
-  background: #fffaf3;
+  background: var(--surface-soft);
 }
 
 .order-grid-header .customer-cell {
   z-index: 4;
-  background: #eadfce;
+  background: var(--header);
 }
 
 .product-header-cell {
+  justify-content: center;
   font-weight: 700;
+  text-align: center;
 }
 
 /* =========================
@@ -96,41 +154,50 @@
 .actions-cell {
   justify-content: center;
   align-items: center;
-  background: #fffaf3;
+  background: var(--surface-soft);
 }
 
 .order-grid-header .actions-cell {
-  background: #eadfce;
+  background: var(--header);
   font-weight: 700;
 }
 
 .remove-row-btn {
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   padding: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--muted);
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
 .remove-row-btn:hover {
-  background: #f3d8d3;
+  background: var(--danger-soft);
   color: var(--danger);
 }
 
+.week-locked .remove-row-btn {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 /* =========================
-   Rows
+   Rows and cells
    ========================= */
 
 .customer-row {
-  background: var(--card);
+  background: var(--surface);
+}
+
+.customer-row:nth-child(even) {
+  background: var(--surface-soft);
 }
 
 .customer-row:hover,
 .draft-row {
-  background: #fffaf3;
+  background: var(--surface-hover);
 }
 
 .customer-row.dragging {
@@ -140,38 +207,53 @@
 .drag-handle {
   cursor: grab;
   color: var(--muted);
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1;
 }
 
-/* =========================
-   Order cells
-   ========================= */
+.disabled-handle {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
 
 .order-cell {
   width: 100%;
-  min-height: 54px;
+  min-height: 40px;
   background: transparent;
   color: var(--text);
   border: none;
   border-radius: 0;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: stretch;
   flex-direction: column;
   cursor: pointer;
   text-align: left;
 }
 
 .order-cell:hover {
-  background: #f7f1e8;
+  background: var(--surface-hover);
+}
+
+.filled-cell {
+  background: #eaf2ff;
+}
+
+.filled-cell:hover {
+  background: #dbeafe;
+}
+
+.week-locked .order-cell {
+  cursor: not-allowed;
+  opacity: 0.78;
 }
 
 .cell-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
   width: 100%;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.2;
 }
 
 .empty-cell,
@@ -181,11 +263,12 @@
 }
 
 .empty-main-table {
-  padding: 24px;
+  padding: 18px;
+  font-size: 0.9rem;
 }
 
 /* =========================
-   Draft row autocomplete
+   Autocomplete
    ========================= */
 
 .customer-autocomplete {
@@ -195,15 +278,17 @@
 
 .customer-autocomplete input {
   width: 100%;
-  padding: 9px 11px;
+  min-height: 32px;
+  padding: 7px 9px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #ffffff;
+  border-radius: 7px;
+  background: var(--surface);
   color: var(--text);
+  font-size: 0.86rem;
 }
 
 .customer-autocomplete input:focus {
-  outline: 2px solid rgba(138, 90, 43, 0.25);
+  outline: 2px solid rgba(37, 99, 235, 0.16);
   border-color: var(--accent);
 }
 
@@ -216,34 +301,34 @@
   overflow: auto;
   padding: 6px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #ffffff;
+  border-radius: 10px;
+  background: var(--surface);
   color: var(--text);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  box-shadow: var(--shadow);
 }
 
 .customer-suggestion {
   width: 100%;
-  padding: 9px 10px;
-  border-radius: 8px;
+  padding: 7px 9px;
+  border-radius: 7px;
   border: none;
-  background: #ffffff;
+  background: var(--surface);
   color: var(--text);
   text-align: left;
+  font-size: 0.86rem;
 }
 
 .customer-suggestion:hover {
-  background: #f7f1e8;
-  color: var(--text);
+  background: var(--surface-hover);
 }
 
 .customer-suggestion-empty {
-  padding: 9px 10px;
+  padding: 7px 9px;
   color: var(--muted);
 }
 
 /* =========================
-   Order modal
+   Modal
    ========================= */
 
 .order-modal {
@@ -263,9 +348,9 @@
   z-index: 101;
   width: min(520px, calc(100vw - 32px));
   margin: 10vh auto;
-  background: var(--card);
-  border-radius: 18px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  background: var(--surface);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
@@ -274,17 +359,25 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  padding: 18px 20px;
+  padding: 13px 16px;
   border-bottom: 1px solid var(--border);
+  background: var(--header);
 }
 
 .order-modal-header h3 {
   margin: 0;
+  font-size: 1.05rem;
+}
+
+.order-modal-header p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .order-modal-header button {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border-radius: 50%;
 }
@@ -292,64 +385,104 @@
 .order-modal-form {
   display: grid;
   gap: 12px;
-  padding: 20px;
+  padding: 16px;
 }
 
-.order-modal-row {
-  display: grid;
-  grid-template-columns: 1fr 120px;
-  align-items: center;
-  gap: 12px;
-}
-
-.order-modal-row small {
-  display: block;
-  color: var(--muted);
-  margin-top: 3px;
-}
-
-.order-modal-row input {
-  padding: 10px 12px;
+.order-modal-table {
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: #ffffff;
-  color: var(--text);
 }
 
-.order-modal-row input:focus {
-  outline: 2px solid rgba(138, 90, 43, 0.25);
+.order-modal-table-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 90px;
+}
+
+.order-modal-table-head {
+  background: var(--header);
+  font-weight: 700;
+}
+
+.order-modal-table-row > div {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 7px 9px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.86rem;
+}
+
+.order-modal-table-row > div:last-child {
+  border-right: none;
+}
+
+.order-modal-table-row input {
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: right;
+}
+
+.order-modal-table-row input:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.16);
   border-color: var(--accent);
+}
+
+.order-modal-empty {
+  padding: 14px;
+  color: var(--muted);
 }
 
 .order-modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 8px;
+}
+
+.secondary-btn {
+  background: var(--surface-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.secondary-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
 }
 
 /* =========================
    Responsive
    ========================= */
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .main-table-toolbar {
+    grid-template-columns: 1fr;
     align-items: flex-start;
-    flex-direction: column;
   }
 
+  .week-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 720px) {
   .order-grid-row {
     grid-template-columns:
-      200px
-      repeat(var(--product-count), minmax(120px, 1fr))
-      72px;
+      190px
+      repeat(var(--product-count), minmax(105px, 1fr))
+      60px;
   }
 
   .order-modal-card {
     margin-top: 6vh;
   }
 
-  .order-modal-row {
-    grid-template-columns: 1fr;
+  .order-modal-table-row {
+    grid-template-columns: 1fr 80px 80px;
   }
 }

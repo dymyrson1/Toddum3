@@ -38,6 +38,9 @@ export async function getCustomers() {
 export async function addCustomer(name) {
   return addDoc(collection(db, "customers"), {
     name: name.trim(),
+    contactPerson: "",
+    address: "",
+    phone: "",
     active: true,
     order: Date.now(),
     createdAt: serverTimestamp(),
@@ -172,7 +175,7 @@ export async function removePackaging(productId, packagingId) {
   }
 
   const updatedPackaging = (product.packaging || []).filter(
-    (packaging) => packaging.id !== packagingId,
+    (packaging) => packaging.id !== packagingId
   );
 
   return updateDoc(ref, {
@@ -227,7 +230,7 @@ export async function getOrderItemsByOrderIds(orderIds) {
       ...snapshot.docs.map((document) => ({
         id: document.id,
         ...document.data(),
-      })),
+      }))
     );
   }
 
@@ -238,7 +241,7 @@ export async function ensureOrder(customerId, weekId) {
   const q = query(
     collection(db, "orders"),
     where("customerId", "==", customerId),
-    where("weekId", "==", weekId),
+    where("weekId", "==", weekId)
   );
 
   const snapshot = await getDocs(q);
@@ -266,14 +269,19 @@ export async function ensureOrder(customerId, weekId) {
   };
 }
 
-export async function setOrderItem({ orderId, productId, packagingId, quantity }) {
+export async function setOrderItem({
+  orderId,
+  productId,
+  packagingId,
+  quantity,
+}) {
   const normalizedQuantity = Number(quantity);
 
   const q = query(
     collection(db, "orderItems"),
     where("orderId", "==", orderId),
     where("productId", "==", productId),
-    where("packagingId", "==", packagingId),
+    where("packagingId", "==", packagingId)
   );
 
   const snapshot = await getDocs(q);
@@ -301,11 +309,10 @@ export async function setOrderItem({ orderId, productId, packagingId, quantity }
 
 export async function deleteOrderItemsByOrderId(orderId) {
   const q = query(collection(db, "orderItems"), where("orderId", "==", orderId));
-
   const snapshot = await getDocs(q);
 
   const deletes = snapshot.docs.map((document) =>
-    deleteDoc(doc(db, "orderItems", document.id)),
+    deleteDoc(doc(db, "orderItems", document.id))
   );
 
   return Promise.all(deletes);

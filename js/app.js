@@ -1,6 +1,7 @@
 import { listenToAuthState, login, logout } from "./auth.js";
 import { initSettings } from "./settings.js";
 import { initMainTable } from "./main-table.js";
+import { initRapport } from "./rapport.js";
 
 const authView = document.querySelector("#authView");
 const appView = document.querySelector("#appView");
@@ -58,6 +59,10 @@ logoutBtn.addEventListener("click", async () => {
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
     switchTab(button.dataset.tab);
+
+    if (button.dataset.tab === "rapport") {
+      initRapport();
+    }
   });
 });
 
@@ -68,6 +73,7 @@ listenToAuthState((user) => {
 
     initSettings();
     initMainTable();
+    initRapport();
   } else {
     showAuthView();
   }

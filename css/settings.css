@@ -1,95 +1,285 @@
+/* =========================
+   Settings
+   ========================= */
+
 .settings {
   display: grid;
-  gap: 32px;
+  gap: 18px;
 }
 
-.settings-section {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px;
-}
-
-.settings-form,
-.packaging-form {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.settings-form input,
-.packaging-form input,
-.settings-row input,
-.product-header input,
-.packaging-item input {
-  padding: 9px 11px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-}
-
-.settings-list,
-.products-list,
-.packaging-list {
+.settings-panel {
   display: grid;
-  gap: 10px;
-}
-
-.settings-row,
-.product-header,
-.packaging-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.settings-row {
-  justify-content: space-between;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-
-.product-card {
-  display: grid;
-  gap: 14px;
+  gap: 12px;
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: #fffaf3;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
 }
 
-.product-header {
+.settings-panel-header {
+  display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.settings-panel h2 {
+  margin: 0;
+  font-size: 1.12rem;
+}
+
+.settings-panel p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* =========================
+   Add bars
+   ========================= */
+
+.settings-add-bar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+
+.settings-add-bar input,
+.settings-table input,
+.packaging-add-form input,
+.packaging-mini-table input {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.settings-add-bar input:focus,
+.settings-table input:focus,
+.packaging-add-form input:focus,
+.packaging-mini-table input:focus {
+  outline: 2px solid rgba(37, 99, 235, 0.16);
+  border-color: var(--accent);
+}
+
+/* =========================
+   Shared table
+   ========================= */
+
+.settings-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.settings-table {
+  min-width: max-content;
+}
+
+.settings-table-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--header);
+  font-weight: 700;
+}
+
+.settings-table-row {
+  background: var(--surface);
+}
+
+.settings-table-row:nth-child(even) {
+  background: var(--surface-soft);
+}
+
+.settings-table-row:hover {
+  background: var(--surface-hover);
+}
+
+.settings-table-head > div,
+.settings-table-row > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 7px 9px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.settings-table-head > div:last-child,
+.settings-table-row > div:last-child {
+  border-right: none;
+}
+
+/* =========================
+   Customer table
+   ========================= */
+
+.customer-row {
+  display: grid;
+  grid-template-columns: 42px 180px 180px minmax(260px, 1fr) 140px 88px 130px;
+  min-width: 1020px;
+}
+
+.customer-row > div:first-child {
+  justify-content: center;
+  color: var(--muted);
+}
+
+/* =========================
+   Product table
+   ========================= */
+
+.product-row {
+  display: grid;
+  grid-template-columns: 220px 88px minmax(460px, 1fr) 130px;
+  min-width: 920px;
 }
 
 .product-name-input {
   font-weight: 700;
-  font-size: 1rem;
 }
 
-.packaging-item {
-  padding: 8px;
+.packaging-area {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+/* =========================
+   Packaging mini table
+   ========================= */
+
+.packaging-mini-table {
+  overflow: hidden;
+  border: 1px solid var(--border);
   border-radius: 10px;
-  background: #f7f1e8;
+  background: var(--surface);
 }
 
-.packaging-item input[type="number"] {
-  width: 120px;
+.packaging-mini-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 110px 120px;
 }
+
+.packaging-mini-head {
+  background: var(--header);
+  font-weight: 700;
+}
+
+.packaging-mini-row > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 8px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.86rem;
+}
+
+.packaging-mini-row > div:last-child {
+  border-right: none;
+}
+
+.packaging-add-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 110px 70px;
+  gap: 6px;
+  align-items: center;
+}
+
+/* =========================
+   Actions
+   ========================= */
 
 .settings-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.danger-btn {
-  background: var(--danger);
+.settings-add-bar button,
+.packaging-add-form button,
+.small-danger-btn,
+.small-secondary-btn {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 0.84rem;
 }
 
-.danger-btn:hover {
-  background: #8f1d14;
+.small-danger-btn {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger-soft);
 }
 
-.inactive {
-  opacity: 0.45;
+.small-danger-btn:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.small-secondary-btn {
+  background: var(--surface-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.small-secondary-btn:hover {
+  background: var(--surface-hover);
+}
+
+/* =========================
+   Status
+   ========================= */
+
+.status-pill {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.status-pill.active {
+  background: var(--success-soft);
+  color: var(--success-text);
+}
+
+.status-pill.inactive {
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+.is-inactive {
+  opacity: 0.55;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 900px) {
+  .settings-panel-header {
+    flex-direction: column;
+  }
+
+  .settings-add-bar,
+  .packaging-add-form {
+    grid-template-columns: 1fr;
+  }
 }

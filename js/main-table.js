@@ -13,12 +13,14 @@ import {
 const container = document.querySelector("#mainTab");
 
 let state = {
-  weekId: getISOWeekId(),
+  currentDate: new Date(),
+  weekId: getISOWeekId(new Date()),
   customers: [],
   products: [],
   orders: [],
   items: [],
   draftRows: [],
+  unlockedWeeks: new Set(),
 };
 
 export async function initMainTable() {
@@ -35,6 +37,57 @@ async function loadData() {
 
   const orderIds = state.orders.map((order) => order.id);
   state.items = await getOrderItemsByOrderIds(orderIds);
+}
+
+function setWeekFromDate(date) {
+  state.currentDate = date;
+  state.weekId = getISOWeekId(date);
+  state.draftRows = [];
+}
+
+async function goToPreviousWeek() {
+  const date = new Date(state.currentDate);
+  date.setDate(date.getDate() - 7);
+  setWeekFromDate(date);
+
+  await loadData();
+  render();
+}
+
+async function goToNextWeek() {
+  const date = new Date(state.currentDate);
+  date.setDate(date.getDate() + 7);
+  setWeekFromDate(date);
+
+  await loadData();
+  render();
+}
+
+async function goToCurrentWeek() {
+  setWeekFromDate(new Date());
+
+  await loadData();
+  render();
+}
+
+function isCurrentWeek() {
+  return state.weekId === getISOWeekId(new Date());
+}
+
+function isWeekUnlocked() {
+  return isCurrentWeek() || state.unlockedWeeks.has(state.weekId);
+}
+
+function toggleWeekLock() {
+  if (isCurrentWeek()) return;
+
+  if (state.unlockedWeeks.has(state.weekId)) {
+    state.unlockedWeeks.delete(state.weekId);
+  } else {
+    state.unlockedWeeks.add(state.weekId);
+  }
+
+  render();
 }
 
 function getCustomerById(customerId) {
@@ -122,38 +175,68 @@ function renderDraftRow(draftRow) {
       ${state.products
         .map(
           () => `
-            <div class="order-grid-cell draft-cell">
-              —
-            </div>
+            <div class="order-grid-cell draft-cell">—</div>
           `,
         )
         .join("")}
 
-      <div class="order-grid-cell actions-cell">
-        —
-      </div>
+      <div class="order-grid-cell actions-cell">—</div>
     </div>
   `;
 }
 
 function render() {
   const productCount = state.products.length;
-  const totalColumns = productCount + 2; // customer + products + actions
   const visibleOrders = getVisibleOrders();
+  const canEdit = isWeekUnlocked();
 
   container.innerHTML = `
-    <section class="main-table-view">
+    <section class="main-table-view ${canEdit ? "" : "week-locked"}">
       <div class="main-table-toolbar">
         <div>
           <h2>Main table</h2>
-          <p>Week: <strong>${state.weekId}</strong></p>
+          <p>
+            Week: <strong>${state.weekId}</strong>
+            ${
+              canEdit
+                ? `<span class="week-status unlocked">Unlocked</span>`
+                : `<span class="week-status locked">Locked</span>`
+            }
+          </p>
         </div>
 
-        <button type="button" id="addRowBtn">Add row</button>
+        <div class="week-controls">
+          <button type="button" id="previousWeekBtn">← Previous</button>
+          <button type="button" id="currentWeekBtn">Current</button>
+          <button type="button" id="nextWeekBtn">Next →</button>
+
+          ${
+            isCurrentWeek()
+              ? ""
+              : `
+                <button type="button" id="toggleWeekLockBtn">
+                  ${canEdit ? "🔓 Lock" : "🔒 Unlock"}
+                </button>
+              `
+          }
+        </div>
+
+        <button type="button" id="addRowBtn" ${canEdit ? "" : "disabled"}>
+          + Add row
+        </button>
       </div>
 
+      ${
+        canEdit
+          ? ""
+          : `
+            <div class="locked-week-message">
+              🔒 This week is locked. Unlock it to edit old data.
+            </div>
+          `
+      }
+
       <div class="order-grid" style="--product-count: ${productCount};">
-        <!-- HEADER -->
         <div class="order-grid-header order-grid-row">
           <div class="order-grid-cell customer-cell">Customer</div>
 
@@ -170,33 +253,35 @@ function render() {
           <div class="order-grid-cell actions-cell">Actions</div>
         </div>
 
-        <!-- BODY -->
         <div class="order-grid-body">
           ${visibleOrders
             .map(
               (order) => `
                 <div
                   class="order-grid-row customer-row"
-                  draggable="true"
+                  ${canEdit ? `draggable="true"` : ""}
                   data-customer-row="${order.customerId}"
                 >
                   <div class="order-grid-cell customer-cell">
-                    <span class="drag-handle">☰</span>
+                    <span class="drag-handle ${canEdit ? "" : "disabled-handle"}">☰</span>
                     <strong>${order.customer.name}</strong>
                   </div>
 
                   ${state.products
-                    .map(
-                      (product) => `
+                    .map((product) => {
+                      const hasItems = getCellItems(order.id, product.id).length > 0;
+
+                      return `
                         <button
                           type="button"
-                          class="order-grid-cell order-cell"
+                          class="order-grid-cell order-cell ${hasItems ? "filled-cell" : ""}"
                           data-order-cell="${order.id}:${product.id}"
+                          ${canEdit ? "" : "disabled"}
                         >
                           ${renderCell(order.id, product.id)}
                         </button>
-                      `,
-                    )
+                      `;
+                    })
                     .join("")}
 
                   <div class="order-grid-cell actions-cell">
@@ -204,6 +289,8 @@ function render() {
                       type="button"
                       class="remove-row-btn"
                       data-remove-order="${order.id}"
+                      title="Remove row"
+                      ${canEdit ? "" : "disabled"}
                     >
                       ×
                     </button>
@@ -213,13 +300,13 @@ function render() {
             )
             .join("")}
 
-          ${state.draftRows.map(renderDraftRow).join("")}
+          ${canEdit ? state.draftRows.map(renderDraftRow).join("") : ""}
 
           ${
-            !visibleOrders.length && !state.draftRows.length
+            !visibleOrders.length && (!canEdit || !state.draftRows.length)
               ? `
                 <div class="empty-main-table">
-                  Click Add row to add a customer for this week.
+                  ${canEdit ? "Click Add row to add a customer for this week." : "No rows for this week."}
                 </div>
               `
               : ""
@@ -236,13 +323,29 @@ function render() {
 }
 
 function bindEvents() {
-  document.querySelector("#addRowBtn").addEventListener("click", () => {
-    state.draftRows.push({
-      id: crypto.randomUUID(),
-    });
+  document.querySelector("#previousWeekBtn").addEventListener("click", goToPreviousWeek);
+  document.querySelector("#currentWeekBtn").addEventListener("click", goToCurrentWeek);
+  document.querySelector("#nextWeekBtn").addEventListener("click", goToNextWeek);
 
-    render();
-  });
+  const toggleWeekLockBtn = document.querySelector("#toggleWeekLockBtn");
+
+  if (toggleWeekLockBtn) {
+    toggleWeekLockBtn.addEventListener("click", toggleWeekLock);
+  }
+
+  const addRowBtn = document.querySelector("#addRowBtn");
+
+  if (!addRowBtn.disabled) {
+    addRowBtn.addEventListener("click", () => {
+      state.draftRows.push({
+        id: crypto.randomUUID(),
+      });
+
+      render();
+    });
+  }
+
+  if (!isWeekUnlocked()) return;
 
   bindCustomerAutocomplete();
 
@@ -407,43 +510,58 @@ function openOrderModal(orderId, productId) {
 
     <div class="order-modal-card">
       <div class="order-modal-header">
-        <h3>${product.name}</h3>
+        <div>
+          <h3>${product.name}</h3>
+          <p>Edit quantities by packaging</p>
+        </div>
+
         <button type="button" data-close-modal>×</button>
       </div>
 
       <form id="orderModalForm" class="order-modal-form">
-        ${
-          product.packaging?.length
-            ? product.packaging
-                .map(
-                  (packaging) => `
-                    <label class="order-modal-row">
-                      <span>
-                        <strong>${packaging.name}</strong>
-                        <small>${packaging.weightGrams} g</small>
-                      </span>
+        <div class="order-modal-table">
+          <div class="order-modal-table-row order-modal-table-head">
+            <div>Packaging</div>
+            <div>Weight</div>
+            <div>Qty</div>
+          </div>
 
-                      <input
-                        type="number"
-                        min="0"
-                        step="1"
-                        name="${packaging.id}"
-                        value="${getExistingQuantity(orderId, productId, packaging.id)}"
-                        placeholder="0"
-                      />
-                    </label>
-                  `,
-                )
-                .join("")
-            : `
-              <p class="empty-cell">
-                No packaging registered for this product.
-              </p>
-            `
-        }
+          ${
+            product.packaging?.length
+              ? product.packaging
+                  .map(
+                    (packaging) => `
+                      <label class="order-modal-table-row">
+                        <div>${packaging.name}</div>
+                        <div>${packaging.weightGrams} g</div>
+                        <div>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            name="${packaging.id}"
+                            value="${getExistingQuantity(
+                              orderId,
+                              productId,
+                              packaging.id,
+                            )}"
+                            placeholder="0"
+                          />
+                        </div>
+                      </label>
+                    `,
+                  )
+                  .join("")
+              : `
+                <div class="order-modal-empty">
+                  No packaging registered for this product.
+                </div>
+              `
+          }
+        </div>
 
         <div class="order-modal-actions">
-          <button type="button" data-close-modal>Cancel</button>
+          <button type="button" class="secondary-btn" data-close-modal>Cancel</button>
           <button type="submit">Save</button>
         </div>
       </form>

@@ -3,14 +3,32 @@
 }
 
 :root {
-  --bg: #f4f1ea;
-  --card: #ffffff;
+  --bg: #f4f6f8;
+  --card: var(--surface);
   --text: #1f2933;
   --muted: #6b7280;
-  --border: #ddd6cc;
-  --accent: #8a5a2b;
-  --accent-dark: #6f4520;
+  --border: #d7dee6;
+
+  --surface: var(--surface);
+  --surface-soft: #f8fafc;
+  --surface-hover: #f1f5f9;
+  --header: #eef2f6;
+
+  --accent: #2563eb;
+  --accent-dark: #1d4ed8;
+
   --danger: #b42318;
+  --danger-soft: var(--danger-soft);
+  --danger-dark: var(--danger-dark);
+
+  --success-soft: var(--success-soft);
+  --success-text: var(--success-text);
+
+  --warning-soft: var(--warning-soft);
+  --warning-text: var(--warning-text);
+
+  --shadow: 0 10px 30px rgba(31, 41, 51, 0.12);
+  --soft-shadow: 0 4px 14px rgba(31, 41, 51, 0.14);
 }
 
 body {

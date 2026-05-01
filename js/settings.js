@@ -26,145 +26,241 @@ async function render() {
 
   container.innerHTML = `
     <div class="settings">
-      <section class="settings-section">
-        <h2>Customers</h2>
+      <section class="settings-panel">
+        <div class="settings-panel-header">
+          <div>
+            <h2>Customers</h2>
+            <p>${customers.length} registered customers</p>
+          </div>
+        </div>
 
-        <form id="addCustomerForm" class="settings-form">
-          <input id="customerName" placeholder="Customer name" required />
+        <form id="addCustomerForm" class="settings-add-bar">
+          <input id="customerName" placeholder="New customer name" required />
           <button type="submit">Add customer</button>
         </form>
 
-        <div class="settings-list">
-          ${customers
-            .map(
-              (customer) => `
-                <div class="settings-row ${customer.active ? "" : "inactive"}">
-                  <input
-                    value="${customer.name}"
-                    data-customer-name="${customer.id}"
-                  />
+        <div class="settings-table-wrap">
+          <div class="settings-table customer-table">
+            <div class="settings-table-head customer-row">
+              <div>Nr.</div>
+              <div>Name</div>
+              <div>Kontaktperson</div>
+              <div>Address</div>
+              <div>Phone</div>
+              <div>Status</div>
+              <div>Actions</div>
+            </div>
 
-                  <div class="settings-actions">
-                    <button type="button" data-save-customer="${customer.id}">
-                      Save
-                    </button>
+            <div class="settings-table-body">
+              ${customers
+                .map(
+                  (customer, index) => `
+                    <div class="settings-table-row customer-row ${
+                      customer.active ? "" : "is-inactive"
+                    }">
+                      <div>${index + 1}</div>
 
-                    ${
-                      customer.active
-                        ? `<button type="button" class="danger-btn" data-disable-customer="${customer.id}">
-                            Deactivate
-                          </button>`
-                        : `<button type="button" data-restore-customer="${customer.id}">
-                            Restore
-                          </button>`
-                    }
-                  </div>
-                </div>
-              `,
-            )
-            .join("")}
+                      <div>
+                        <input
+                          value="${customer.name || ""}"
+                          data-customer-field="${customer.id}:name"
+                        />
+                      </div>
+
+                      <div>
+                        <input
+                          value="${customer.contactPerson || ""}"
+                          placeholder="Kontaktperson"
+                          data-customer-field="${customer.id}:contactPerson"
+                        />
+                      </div>
+
+                      <div>
+                        <input
+                          value="${customer.address || ""}"
+                          placeholder="Address"
+                          data-customer-field="${customer.id}:address"
+                        />
+                      </div>
+
+                      <div>
+                        <input
+                          value="${customer.phone || ""}"
+                          placeholder="Phone"
+                          data-customer-field="${customer.id}:phone"
+                        />
+                      </div>
+
+                      <div>
+                        ${
+                          customer.active
+                            ? `<span class="status-pill active">Active</span>`
+                            : `<span class="status-pill inactive">Inactive</span>`
+                        }
+                      </div>
+
+                      <div class="settings-actions">
+                        ${
+                          customer.active
+                            ? `<button
+                                type="button"
+                                class="small-danger-btn"
+                                data-disable-customer="${customer.id}"
+                              >
+                                Deactivate
+                              </button>`
+                            : `<button
+                                type="button"
+                                class="small-secondary-btn"
+                                data-restore-customer="${customer.id}"
+                              >
+                                Restore
+                              </button>`
+                        }
+                      </div>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="settings-section">
-        <h2>Products</h2>
+      <section class="settings-panel">
+        <div class="settings-panel-header">
+          <div>
+            <h2>Products & packaging</h2>
+            <p>${products.length} registered products</p>
+          </div>
+        </div>
 
-        <form id="addProductForm" class="settings-form">
-          <input id="productName" placeholder="Product name" required />
+        <form id="addProductForm" class="settings-add-bar">
+          <input id="productName" placeholder="New product name" required />
           <button type="submit">Add product</button>
         </form>
 
-        <div class="products-list">
-          ${products
-            .map(
-              (product) => `
-                <article class="product-card ${product.active ? "" : "inactive"}">
-                  <div class="product-header">
-                    <input
-                      class="product-name-input"
-                      value="${product.name}"
-                      data-product-name="${product.id}"
-                    />
+        <div class="settings-table-wrap">
+          <div class="settings-table product-table">
+            <div class="settings-table-head product-row">
+              <div>Product</div>
+              <div>Status</div>
+              <div>Packaging</div>
+              <div>Actions</div>
+            </div>
 
-                    <div class="settings-actions">
-                      <button type="button" data-save-product="${product.id}">
-                        Save
-                      </button>
+            <div class="settings-table-body">
+              ${products
+                .map(
+                  (product) => `
+                    <div class="settings-table-row product-row ${
+                      product.active ? "" : "is-inactive"
+                    }">
+                      <div>
+                        <input
+                          class="product-name-input"
+                          value="${product.name || ""}"
+                          data-product-field="${product.id}:name"
+                        />
+                      </div>
 
-                      ${
-                        product.active
-                          ? `<button type="button" class="danger-btn" data-disable-product="${product.id}">
-                              Deactivate
-                            </button>`
-                          : `<button type="button" data-restore-product="${product.id}">
-                              Restore
-                            </button>`
-                      }
-                    </div>
-                  </div>
+                      <div>
+                        ${
+                          product.active
+                            ? `<span class="status-pill active">Active</span>`
+                            : `<span class="status-pill inactive">Inactive</span>`
+                        }
+                      </div>
 
-                  <div class="packaging-list">
-                    ${(product.packaging || [])
-                      .map(
-                        (packaging) => `
-                          <div class="packaging-item">
-                            <input
-                              value="${packaging.name}"
-                              data-packaging-name="${product.id}:${packaging.id}"
-                            />
-
-                            <input
-                              type="number"
-                              min="1"
-                              step="1"
-                              value="${packaging.weightGrams}"
-                              data-packaging-weight="${product.id}:${packaging.id}"
-                            />
-
-                            <span>g</span>
-
-                            <button
-                              type="button"
-                              data-save-packaging="${product.id}:${packaging.id}"
-                            >
-                              Save
-                            </button>
-
-                            <button
-                              type="button"
-                              class="danger-btn"
-                              data-remove-packaging="${product.id}:${packaging.id}"
-                            >
-                              Remove
-                            </button>
+                      <div class="packaging-area">
+                        <div class="packaging-mini-table">
+                          <div class="packaging-mini-row packaging-mini-head">
+                            <div>Packaging</div>
+                            <div>Weight, g</div>
+                            <div>Actions</div>
                           </div>
-                        `,
-                      )
-                      .join("")}
-                  </div>
 
-                  <form class="packaging-form" data-add-pack="${product.id}">
-                    <input
-                      name="packagingName"
-                      placeholder="Packaging name"
-                      required
-                    />
+                          ${(product.packaging || [])
+                            .map(
+                              (packaging) => `
+                                <div class="packaging-mini-row">
+                                  <div>
+                                    <input
+                                      value="${packaging.name || ""}"
+                                      data-packaging-field="${product.id}:${packaging.id}:name"
+                                    />
+                                  </div>
 
-                    <input
-                      name="weightGrams"
-                      type="number"
-                      min="1"
-                      step="1"
-                      placeholder="Weight in grams"
-                      required
-                    />
+                                  <div>
+                                    <input
+                                      type="number"
+                                      min="1"
+                                      step="1"
+                                      value="${packaging.weightGrams || ""}"
+                                      data-packaging-field="${product.id}:${packaging.id}:weightGrams"
+                                    />
+                                  </div>
 
-                    <button type="submit">Add packaging</button>
-                  </form>
-                </article>
-              `,
-            )
-            .join("")}
+                                  <div class="settings-actions">
+                                    <button
+                                      type="button"
+                                      class="small-danger-btn"
+                                      data-remove-packaging="${product.id}:${packaging.id}"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              `
+                            )
+                            .join("")}
+                        </div>
+
+                        <form class="packaging-add-form" data-add-pack="${product.id}">
+                          <input
+                            name="packagingName"
+                            placeholder="Packaging name"
+                            required
+                          />
+
+                          <input
+                            name="weightGrams"
+                            type="number"
+                            min="1"
+                            step="1"
+                            placeholder="g"
+                            required
+                          />
+
+                          <button type="submit">Add</button>
+                        </form>
+                      </div>
+
+                      <div class="settings-actions">
+                        ${
+                          product.active
+                            ? `<button
+                                type="button"
+                                class="small-danger-btn"
+                                data-disable-product="${product.id}"
+                              >
+                                Deactivate
+                              </button>`
+                            : `<button
+                                type="button"
+                                class="small-secondary-btn"
+                                data-restore-product="${product.id}"
+                              >
+                                Restore
+                              </button>`
+                        }
+                      </div>
+                    </div>
+                  `
+                )
+                .join("")}
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -174,30 +270,60 @@ async function render() {
 }
 
 function bindEvents() {
-  document.querySelector("#addCustomerForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
+  bindAddCustomer();
+  bindCustomerAutosave();
+  bindCustomerStatusActions();
 
-    const input = document.querySelector("#customerName");
-    await addCustomer(input.value);
+  bindAddProduct();
+  bindProductAutosave();
+  bindProductStatusActions();
 
-    render();
-  });
+  bindAddPackaging();
+  bindPackagingAutosave();
+  bindRemovePackaging();
+}
 
-  document.querySelectorAll("[data-save-customer]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const customerId = button.dataset.saveCustomer;
-      const input = document.querySelector(`[data-customer-name="${customerId}"]`);
+function bindAddCustomer() {
+  document
+    .querySelector("#addCustomerForm")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-      await updateCustomer(customerId, {
-        name: input.value.trim(),
-      });
+      const input = document.querySelector("#customerName");
+      await addCustomer(input.value);
 
       render();
     });
-  });
+}
 
+function bindCustomerAutosave() {
+  document.querySelectorAll("[data-customer-field]").forEach((input) => {
+    input.addEventListener("blur", async () => {
+      const [customerId, fieldName] = input.dataset.customerField.split(":");
+
+      await updateCustomer(customerId, {
+        [fieldName]: input.value.trim(),
+      });
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+
+      event.preventDefault();
+      input.blur();
+    });
+  });
+}
+
+function bindCustomerStatusActions() {
   document.querySelectorAll("[data-disable-customer]").forEach((button) => {
     button.addEventListener("click", async () => {
+      const confirmed = confirm(
+        "Deactivate this customer? Old weeks will keep their history."
+      );
+
+      if (!confirmed) return;
+
       await softDeleteCustomer(button.dataset.disableCustomer);
       render();
     });
@@ -209,31 +335,49 @@ function bindEvents() {
       render();
     });
   });
+}
 
-  document.querySelector("#addProductForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
+function bindAddProduct() {
+  document
+    .querySelector("#addProductForm")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-    const input = document.querySelector("#productName");
-    await addProduct(input.value);
-
-    render();
-  });
-
-  document.querySelectorAll("[data-save-product]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const productId = button.dataset.saveProduct;
-      const input = document.querySelector(`[data-product-name="${productId}"]`);
-
-      await updateProduct(productId, {
-        name: input.value.trim(),
-      });
+      const input = document.querySelector("#productName");
+      await addProduct(input.value);
 
       render();
     });
-  });
+}
 
+function bindProductAutosave() {
+  document.querySelectorAll("[data-product-field]").forEach((input) => {
+    input.addEventListener("blur", async () => {
+      const [productId, fieldName] = input.dataset.productField.split(":");
+
+      await updateProduct(productId, {
+        [fieldName]: input.value.trim(),
+      });
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+
+      event.preventDefault();
+      input.blur();
+    });
+  });
+}
+
+function bindProductStatusActions() {
   document.querySelectorAll("[data-disable-product]").forEach((button) => {
     button.addEventListener("click", async () => {
+      const confirmed = confirm(
+        "Deactivate this product? Old weeks will keep their history."
+      );
+
+      if (!confirmed) return;
+
       await softDeleteProduct(button.dataset.disableProduct);
       render();
     });
@@ -245,7 +389,9 @@ function bindEvents() {
       render();
     });
   });
+}
 
+function bindAddPackaging() {
   document.querySelectorAll("[data-add-pack]").forEach((form) => {
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -259,27 +405,45 @@ function bindEvents() {
       render();
     });
   });
+}
 
-  document.querySelectorAll("[data-save-packaging]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const [productId, packagingId] = button.dataset.savePackaging.split(":");
+function bindPackagingAutosave() {
+  document.querySelectorAll("[data-packaging-field]").forEach((input) => {
+    input.addEventListener("blur", async () => {
+      const [productId, packagingId] = input.dataset.packagingField.split(":");
 
       const nameInput = document.querySelector(
-        `[data-packaging-name="${productId}:${packagingId}"]`,
+        `[data-packaging-field="${productId}:${packagingId}:name"]`
       );
 
       const weightInput = document.querySelector(
-        `[data-packaging-weight="${productId}:${packagingId}"]`,
+        `[data-packaging-field="${productId}:${packagingId}:weightGrams"]`
       );
 
-      await updatePackaging(productId, packagingId, nameInput.value, weightInput.value);
+      await updatePackaging(
+        productId,
+        packagingId,
+        nameInput.value.trim(),
+        weightInput.value
+      );
+    });
 
-      render();
+    input.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+
+      event.preventDefault();
+      input.blur();
     });
   });
+}
 
+function bindRemovePackaging() {
   document.querySelectorAll("[data-remove-packaging]").forEach((button) => {
     button.addEventListener("click", async () => {
+      const confirmed = confirm("Remove this packaging?");
+
+      if (!confirmed) return;
+
       const [productId, packagingId] = button.dataset.removePackaging.split(":");
 
       await removePackaging(productId, packagingId);

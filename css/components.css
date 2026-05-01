@@ -3,21 +3,39 @@ button {
   border-radius: 10px;
   padding: 10px 16px;
   background: var(--accent);
-  color: white;
+  color: #ffffff;
 }
 
 button:hover {
   background: var(--accent-dark);
+  color: #ffffff;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .tab-btn {
-  background: #e7dfd3;
+  background: var(--surface-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.tab-btn:hover {
+  background: var(--surface-hover);
   color: var(--text);
 }
 
 .tab-btn.active {
   background: var(--accent);
-  color: white;
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+.tab-btn.active:hover {
+  background: var(--accent-dark);
+  color: #ffffff;
 }
 
 .error-message {
