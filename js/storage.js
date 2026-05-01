@@ -35,12 +35,22 @@ export async function getCustomers() {
   return sortByOrder(customers);
 }
 
-export async function addCustomer({ name, contactPerson, address, phone }) {
+export async function addCustomer(customerData) {
+  const data =
+    typeof customerData === "string"
+      ? {
+          name: customerData,
+          contactPerson: "",
+          address: "",
+          phone: "",
+        }
+      : customerData;
+
   return addDoc(collection(db, "customers"), {
-    name: name.trim(),
-    contactPerson: contactPerson.trim(),
-    address: address.trim(),
-    phone: phone.trim(),
+    name: (data.name || "").trim(),
+    contactPerson: (data.contactPerson || "").trim(),
+    address: (data.address || "").trim(),
+    phone: (data.phone || "").trim(),
     active: true,
     order: Date.now(),
     createdAt: serverTimestamp(),

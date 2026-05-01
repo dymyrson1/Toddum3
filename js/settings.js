@@ -308,12 +308,28 @@ function bindEvents() {
 }
 
 function bindAddCustomer() {
-  document.querySelector("#addCustomerForm").addEventListener("submit", async (event) => {
+  const form = document.querySelector("#addCustomerForm");
+
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const input = document.querySelector("#customerNavn");
-    await addCustomer(input.value);
+    const name = form.elements.name?.value || "";
+    const contactPerson = form.elements.contactPerson?.value || "";
+    const address = form.elements.address?.value || "";
+    const phone = form.elements.phone?.value || "";
 
+    if (!name.trim()) return;
+
+    await addCustomer({
+      name,
+      contactPerson,
+      address,
+      phone,
+    });
+
+    form.reset();
     render();
   });
 }
