@@ -516,3 +516,16 @@
 :root[data-theme="dark"] .filled-cell:hover {
   background: transparent;
 }
+
+/* Draft customer input width fix */
+.draft-row .customer-cell {
+  display: flex;
+}
+
+.draft-row .customer-autocomplete {
+  width: 100%;
+}
+
+.draft-row .customer-autocomplete input {
+  width: 100%;
+}
