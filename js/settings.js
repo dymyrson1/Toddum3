@@ -47,7 +47,10 @@ async function render() {
         <div class="settings-panel-header">
           <div>
             <h2>Customers</h2>
-            <p>${customers.length} registered customers</p>
+            <p>
+              <span>${customers.length} registered customers</span>
+              <span id="settingsSaveStatus" class="settings-save-status">Saved</span>
+            </p>
           </div>
         </div>
 
@@ -316,9 +319,11 @@ function bindCustomerAutosave() {
     input.addEventListener("blur", async () => {
       const [customerId, fieldName] = input.dataset.customerField.split(":");
 
-      await updateCustomer(customerId, {
-        [fieldName]: input.value.trim(),
-      });
+      await runWithSaveStatus(() =>
+        updateCustomer(customerId, {
+          [fieldName]: input.value.trim(),
+        }),
+      );
 
       showSaveStatus();
     });
@@ -370,9 +375,11 @@ function bindProductAutosave() {
     input.addEventListener("blur", async () => {
       const [productId, fieldName] = input.dataset.productField.split(":");
 
-      await updateProduct(productId, {
-        [fieldName]: input.value.trim(),
-      });
+      await runWithSaveStatus(() =>
+        updateProduct(productId, {
+          [fieldName]: input.value.trim(),
+        }),
+      );
 
       showSaveStatus();
     });

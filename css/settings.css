@@ -308,3 +308,36 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* =========================
+   Autosave status
+   ========================= */
+
+.settings-save-status {
+  display: inline-flex;
+  margin-left: 10px;
+  opacity: 0;
+  transform: translateY(-1px);
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.settings-save-status.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.settings-save-status[data-type="saving"] {
+  color: var(--muted);
+}
+
+.settings-save-status[data-type="saved"] {
+  color: var(--success-text);
+}
+
+.settings-save-status[data-type="error"] {
+  color: var(--danger);
+}
