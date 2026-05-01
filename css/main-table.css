@@ -23,7 +23,6 @@
   color: var(--muted);
 }
 
-
 /* =========================
    Order grid
    ========================= */
@@ -70,7 +69,6 @@
   border-right: none;
 }
 
-
 /* =========================
    Sticky customer column
    ========================= */
@@ -90,7 +88,6 @@
 .product-header-cell {
   font-weight: 700;
 }
-
 
 /* =========================
    Actions column
@@ -123,7 +120,6 @@
   color: var(--danger);
 }
 
-
 /* =========================
    Rows
    ========================= */
@@ -147,7 +143,6 @@
   font-size: 18px;
   line-height: 1;
 }
-
 
 /* =========================
    Order cells
@@ -188,7 +183,6 @@
 .empty-main-table {
   padding: 24px;
 }
-
 
 /* =========================
    Draft row autocomplete
@@ -247,7 +241,6 @@
   padding: 9px 10px;
   color: var(--muted);
 }
-
 
 /* =========================
    Order modal
@@ -334,7 +327,6 @@
   gap: 10px;
   margin-top: 8px;
 }
-
 
 /* =========================
    Responsive

@@ -1,58 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="no">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Toddum</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toddum</title>
 
-  <link rel="stylesheet" href="./css/base.css" />
-  <link rel="stylesheet" href="./css/layout.css" />
-  <link rel="stylesheet" href="./css/components.css" />
-  <link rel="stylesheet" href="./css/auth.css" />
-  <link rel="stylesheet" href="./css/settings.css" />
-  <link rel="stylesheet" href="./css/main-table.css" />
-  <link rel="stylesheet" href="./css/rapport.css" />
-</head>
-<body>
-  <main class="app">
-    <section id="authView" class="auth-view">
-      <h1>Toddum</h1>
-
-      <form id="loginForm" class="auth-card">
-        <label>
-          E-post
-          <input id="emailInput" type="email" autocomplete="email" required />
-        </label>
-
-        <label>
-          Passord
-          <input id="passwordInput" type="password" autocomplete="current-password" required />
-        </label>
-
-        <button type="submit">Logg inn</button>
-
-        <p id="authError" class="error-message"></p>
-      </form>
-    </section>
-
-    <section id="appView" class="app-view hidden">
-      <header class="app-header">
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/auth.css" />
+    <link rel="stylesheet" href="./css/settings.css" />
+    <link rel="stylesheet" href="./css/main-table.css" />
+    <link rel="stylesheet" href="./css/rapport.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section id="authView" class="auth-view">
         <h1>Toddum</h1>
-        <button id="logoutBtn">Logg ut</button>
-      </header>
 
-      <nav class="tabs">
-        <button class="tab-btn active" data-tab="settings">Settings</button>
-        <button class="tab-btn" data-tab="main">Main table</button>
-        <button class="tab-btn" data-tab="rapport">Rapport</button>
-      </nav>
+        <form id="loginForm" class="auth-card">
+          <label>
+            E-post
+            <input id="emailInput" type="email" autocomplete="email" required />
+          </label>
 
-      <section id="settingsTab" class="tab-panel active"></section>
-      <section id="mainTab" class="tab-panel"></section>
-      <section id="rapportTab" class="tab-panel"></section>
-    </section>
-  </main>
+          <label>
+            Passord
+            <input
+              id="passwordInput"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+          </label>
 
-  <script type="module" src="./js/app.js"></script>
-</body>
+          <button type="submit">Logg inn</button>
+
+          <p id="authError" class="error-message"></p>
+        </form>
+      </section>
+
+      <section id="appView" class="app-view hidden">
+        <header class="app-header">
+          <h1>Toddum</h1>
+          <button id="logoutBtn">Logg ut</button>
+        </header>
+
+        <nav class="tabs">
+          <button class="tab-btn active" data-tab="settings">Settings</button>
+          <button class="tab-btn" data-tab="main">Main table</button>
+          <button class="tab-btn" data-tab="rapport">Rapport</button>
+        </nav>
+
+        <section id="settingsTab" class="tab-panel active"></section>
+        <section id="mainTab" class="tab-panel"></section>
+        <section id="rapportTab" class="tab-panel"></section>
+      </section>
+    </main>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
 </html>

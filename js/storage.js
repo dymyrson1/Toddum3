@@ -133,7 +133,12 @@ export async function addPackaging(productId, name, weightGrams) {
   });
 }
 
-export async function updatePackaging(productId, packagingId, name, weightGrams) {
+export async function updatePackaging(
+  productId,
+  packagingId,
+  name,
+  weightGrams,
+) {
   const ref = doc(db, "products", productId);
 
   const products = await getProducts();
@@ -172,7 +177,7 @@ export async function removePackaging(productId, packagingId) {
   }
 
   const updatedPackaging = (product.packaging || []).filter(
-    (packaging) => packaging.id !== packagingId
+    (packaging) => packaging.id !== packagingId,
   );
 
   return updateDoc(ref, {
@@ -184,7 +189,9 @@ export async function removePackaging(productId, packagingId) {
 // ---------- WEEKS ----------
 
 export function getISOWeekId(date = new Date()) {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
   const dayNum = d.getUTCDay() || 7;
 
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
@@ -220,14 +227,17 @@ export async function getOrderItemsByOrderIds(orderIds) {
   const results = [];
 
   for (const chunk of chunks) {
-    const q = query(collection(db, "orderItems"), where("orderId", "in", chunk));
+    const q = query(
+      collection(db, "orderItems"),
+      where("orderId", "in", chunk),
+    );
     const snapshot = await getDocs(q);
 
     results.push(
       ...snapshot.docs.map((document) => ({
         id: document.id,
         ...document.data(),
-      }))
+      })),
     );
   }
 
@@ -238,7 +248,7 @@ export async function ensureOrder(customerId, weekId) {
   const q = query(
     collection(db, "orders"),
     where("customerId", "==", customerId),
-    where("weekId", "==", weekId)
+    where("weekId", "==", weekId),
   );
 
   const snapshot = await getDocs(q);
@@ -278,7 +288,7 @@ export async function setOrderItem({
     collection(db, "orderItems"),
     where("orderId", "==", orderId),
     where("productId", "==", productId),
-    where("packagingId", "==", packagingId)
+    where("packagingId", "==", packagingId),
   );
 
   const snapshot = await getDocs(q);
@@ -307,13 +317,13 @@ export async function setOrderItem({
 export async function deleteOrderItemsByOrderId(orderId) {
   const q = query(
     collection(db, "orderItems"),
-    where("orderId", "==", orderId)
+    where("orderId", "==", orderId),
   );
 
   const snapshot = await getDocs(q);
 
   const deletes = snapshot.docs.map((document) =>
-    deleteDoc(doc(db, "orderItems", document.id))
+    deleteDoc(doc(db, "orderItems", document.id)),
   );
 
   return Promise.all(deletes);

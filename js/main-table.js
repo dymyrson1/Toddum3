@@ -55,10 +55,12 @@ function getVisibleOrders() {
 }
 
 function getAvailableCustomers() {
-  const usedCustomerIds = new Set(state.orders.map((order) => order.customerId));
+  const usedCustomerIds = new Set(
+    state.orders.map((order) => order.customerId),
+  );
 
   return state.customers.filter(
-    (customer) => customer.active && !usedCustomerIds.has(customer.id)
+    (customer) => customer.active && !usedCustomerIds.has(customer.id),
   );
 }
 
@@ -67,14 +69,14 @@ function getCellItems(orderId, productId) {
     (item) =>
       item.orderId === orderId &&
       item.productId === productId &&
-      Number(item.quantity) > 0
+      Number(item.quantity) > 0,
   );
 }
 
 function getPackagingName(productId, packagingId) {
   const product = state.products.find((item) => item.id === productId);
   const packaging = (product?.packaging || []).find(
-    (item) => item.id === packagingId
+    (item) => item.id === packagingId,
   );
 
   return packaging?.name || "";
@@ -85,7 +87,7 @@ function getExistingQuantity(orderId, productId, packagingId) {
     (item) =>
       item.orderId === orderId &&
       item.productId === productId &&
-      item.packagingId === packagingId
+      item.packagingId === packagingId,
   );
 
   return item?.quantity || "";
@@ -105,7 +107,7 @@ function renderCell(orderId, productId) {
           <span>${getPackagingName(productId, item.packagingId)}</span>
           <strong>${item.quantity}</strong>
         </div>
-      `
+      `,
     )
     .join("");
 }
@@ -130,7 +132,7 @@ function renderDraftRow(draftRow) {
             <div class="order-grid-cell draft-cell">
               —
             </div>
-          `
+          `,
         )
         .join("")}
 
@@ -168,7 +170,7 @@ function render() {
                 <div class="order-grid-cell product-header-cell">
                   ${product.name}
                 </div>
-              `
+              `,
             )
             .join("")}
 
@@ -200,7 +202,7 @@ function render() {
                         >
                           ${renderCell(order.id, product.id)}
                         </button>
-                      `
+                      `,
                     )
                     .join("")}
 
@@ -214,7 +216,7 @@ function render() {
                     </button>
                   </div>
                 </div>
-              `
+              `,
             )
             .join("")}
 
@@ -263,7 +265,7 @@ function bindEvents() {
       const orderId = button.dataset.removeOrder;
 
       const confirmed = confirm(
-        "Remove this row from the current week? Customer will remain in Settings."
+        "Remove this row from the current week? Customer will remain in Settings.",
       );
 
       if (!confirmed) return;
@@ -293,7 +295,7 @@ function bindCustomerAutocomplete() {
       }
 
       const matches = getAvailableCustomers().filter((customer) =>
-        customer.name.toLowerCase().startsWith(query)
+        customer.name.toLowerCase().startsWith(query),
       );
 
       positionSuggestionPortal(portal, input);
@@ -319,7 +321,7 @@ function bindCustomerAutocomplete() {
             >
               ${customer.name}
             </button>
-          `
+          `,
         )
         .join("");
 
@@ -332,7 +334,7 @@ function bindCustomerAutocomplete() {
           await ensureOrder(customerId, state.weekId);
 
           state.draftRows = state.draftRows.filter(
-            (row) => row.id !== draftRowId
+            (row) => row.id !== draftRowId,
           );
 
           hideSuggestions(portal);
@@ -351,7 +353,7 @@ function bindCustomerAutocomplete() {
       const customerName = input.value.trim().toLowerCase();
 
       const customer = getAvailableCustomers().find(
-        (item) => item.name.toLowerCase() === customerName
+        (item) => item.name.toLowerCase() === customerName,
       );
 
       if (!customer) return;
@@ -438,12 +440,12 @@ function openOrderModal(orderId, productId) {
                         value="${getExistingQuantity(
                           orderId,
                           productId,
-                          packaging.id
+                          packaging.id,
                         )}"
                         placeholder="0"
                       />
                     </label>
-                  `
+                  `,
                 )
                 .join("")
             : `
@@ -567,6 +569,6 @@ function getDragAfterElement(container, y) {
     {
       offset: Number.NEGATIVE_INFINITY,
       element: null,
-    }
+    },
   ).element;
 }

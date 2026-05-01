@@ -60,7 +60,7 @@ async function render() {
                     }
                   </div>
                 </div>
-              `
+              `,
             )
             .join("")}
         </div>
@@ -138,7 +138,7 @@ async function render() {
                               Remove
                             </button>
                           </div>
-                        `
+                        `,
                       )
                       .join("")}
                   </div>
@@ -162,7 +162,7 @@ async function render() {
                     <button type="submit">Add packaging</button>
                   </form>
                 </article>
-              `
+              `,
             )
             .join("")}
         </div>
@@ -188,7 +188,9 @@ function bindEvents() {
   document.querySelectorAll("[data-save-customer]").forEach((button) => {
     button.addEventListener("click", async () => {
       const customerId = button.dataset.saveCustomer;
-      const input = document.querySelector(`[data-customer-name="${customerId}"]`);
+      const input = document.querySelector(
+        `[data-customer-name="${customerId}"]`,
+      );
 
       await updateCustomer(customerId, {
         name: input.value.trim(),
@@ -226,7 +228,9 @@ function bindEvents() {
   document.querySelectorAll("[data-save-product]").forEach((button) => {
     button.addEventListener("click", async () => {
       const productId = button.dataset.saveProduct;
-      const input = document.querySelector(`[data-product-name="${productId}"]`);
+      const input = document.querySelector(
+        `[data-product-name="${productId}"]`,
+      );
 
       await updateProduct(productId, {
         name: input.value.trim(),
@@ -269,18 +273,18 @@ function bindEvents() {
       const [productId, packagingId] = button.dataset.savePackaging.split(":");
 
       const nameInput = document.querySelector(
-        `[data-packaging-name="${productId}:${packagingId}"]`
+        `[data-packaging-name="${productId}:${packagingId}"]`,
       );
 
       const weightInput = document.querySelector(
-        `[data-packaging-weight="${productId}:${packagingId}"]`
+        `[data-packaging-weight="${productId}:${packagingId}"]`,
       );
 
       await updatePackaging(
         productId,
         packagingId,
         nameInput.value,
-        weightInput.value
+        weightInput.value,
       );
 
       render();
@@ -289,7 +293,8 @@ function bindEvents() {
 
   document.querySelectorAll("[data-remove-packaging]").forEach((button) => {
     button.addEventListener("click", async () => {
-      const [productId, packagingId] = button.dataset.removePackaging.split(":");
+      const [productId, packagingId] =
+        button.dataset.removePackaging.split(":");
 
       await removePackaging(productId, packagingId);
 

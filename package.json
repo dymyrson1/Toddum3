@@ -12,5 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "firebase": "^12.12.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
   }
 }
