@@ -1,0 +1,147 @@
+/* Toddum2-style polish layer */
+
+.app {
+  padding: 18px;
+}
+
+.app-header {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
+}
+
+.tabs {
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.tab-btn {
+  min-height: 34px;
+  padding: 7px 13px;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Shared compact controls */
+
+button {
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  font-size: 0.9rem;
+}
+
+.small-danger-btn,
+.remove-row-btn {
+  border: 1px solid var(--danger-soft);
+  background: transparent;
+  color: var(--danger);
+}
+
+.small-danger-btn:hover,
+.remove-row-btn:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.small-secondary-btn,
+.secondary-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.small-secondary-btn:hover,
+.secondary-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+/* Settings closer to old table-like UI */
+
+.settings-panel,
+.main-table-toolbar,
+.order-grid {
+  box-shadow: none;
+}
+
+.settings-panel {
+  padding: 14px;
+}
+
+.settings-table-head > div,
+.settings-table-row > div,
+.order-grid-cell {
+  border-color: var(--border);
+}
+
+.settings-table-row:hover,
+.customer-row:hover {
+  background: #eef6ff;
+}
+
+.settings-add-bar {
+  background: var(--surface);
+}
+
+.settings-add-bar button,
+.packaging-add-form button,
+#addRowBtn,
+.week-controls button {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+/* Main table more production-like */
+
+.main-table-toolbar {
+  padding: 10px 12px;
+}
+
+.order-grid-cell {
+  min-height: 38px;
+}
+
+.customer-cell strong {
+  font-weight: 700;
+}
+
+.product-header-cell {
+  font-size: 0.84rem;
+}
+
+.filled-cell {
+  background: #eaf2ff;
+}
+
+.filled-cell:hover {
+  background: #dbeafe;
+}
+
+.cell-line {
+  font-size: 0.8rem;
+}
+
+/* Modal more like compact editor */
+
+.order-modal-card {
+  border: 1px solid var(--border);
+}
+
+.order-modal-table-row > div {
+  min-height: 38px;
+}
+
+.order-modal-actions button {
+  min-height: 34px;
+  padding: 7px 12px;
+}
