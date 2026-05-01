@@ -552,3 +552,16 @@
   font-weight: 700;
   color: var(--accent);
 }
+
+/* Show remove row button only on row hover */
+.remove-row-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.customer-row:hover .remove-row-btn,
+.customer-row:focus-within .remove-row-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
